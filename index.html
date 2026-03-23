@@ -8,1413 +8,1154 @@
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-  :root {
-    --btc: #F7931A;
-    --btc-dim: rgba(247,147,26,0.15);
-    --btc-border: rgba(247,147,26,0.35);
-    --green: #10B981;
-    --red: #EF4444;
-    --blue: #60A5FA;
-    --purple: #A78BFA;
-    --bg: #0a0e1a;
-    --bg-card: #111827;
-    --bg-sidebar: #0d1117;
-    --bg-hover: rgba(255,255,255,0.05);
-    --border: rgba(255,255,255,0.08);
-    --text: #F1F5F9;
-    --text-dim: rgba(255,255,255,0.45);
-    --text-faint: rgba(255,255,255,0.2);
-    --sidebar-w: 220px;
-    --radius: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: var(--sidebar-w);
-    background: var(--bg-sidebar);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    z-index: 100;
-    transition: transform 0.25s ease;
-  }
-  .sidebar-logo {
-    padding: 1.4rem 1.2rem 1rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .sidebar-logo-top {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 2px;
-  }
-  .sidebar-logo-icon {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, #F7931A, #e07a10);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .sidebar-logo-name {
-    font-size: 1.05rem; font-weight: 900; color: #fff;
-    line-height: 1.1;
-  }
-  .sidebar-logo-name span { color: var(--btc); }
-  .sidebar-logo-sub {
-    font-size: 0.6rem; color: var(--text-dim);
-    font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
-    padding-left: 46px;
-  }
-  .sidebar-nav { flex: 1; padding: 0.75rem 0.6rem; overflow-y: auto; }
-  .sidebar-nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 0.65rem 0.85rem;
-    border-radius: 9px;
-    cursor: pointer;
-    font-size: 0.82rem; font-weight: 600;
-    color: var(--text-dim);
-    transition: all 0.15s;
-    margin-bottom: 2px;
-    text-decoration: none;
-    user-select: none;
-  }
-  .sidebar-nav-item:hover { background: var(--bg-hover); color: #fff; }
-  .sidebar-nav-item.active { background: var(--btc-dim); color: var(--btc); border: 1px solid var(--btc-border); }
-  .sidebar-nav-item svg { flex-shrink: 0; }
-  .sidebar-footer {
-    padding: 0.75rem 0.6rem;
-    border-top: 1px solid var(--border);
-  }
-  .sidebar-user {
-    display: flex; align-items: center; gap: 8px;
-    padding: 0.5rem 0.85rem;
-    border-radius: 9px;
-  }
-  .sidebar-user-avatar {
-    width: 28px; height: 28px;
-    background: linear-gradient(135deg, var(--btc), #e07a10);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.7rem; font-weight: 800; color: #000;
-  }
-  .sidebar-user-name { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); flex: 1; }
-  .sidebar-logout {
-    display: flex; align-items: center; gap: 10px;
-    padding: 0.6rem 0.85rem;
-    border-radius: 9px;
-    cursor: pointer;
-    font-size: 0.82rem; font-weight: 600;
-    color: var(--text-faint);
-    transition: all 0.15s;
-    margin-top: 2px;
-  }
-  .sidebar-logout:hover { background: rgba(239,68,68,0.1); color: var(--red); }
-
-  /* ── MAIN ── */
-  .main-content {
-    margin-left: var(--sidebar-w);
-    flex: 1;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-  .topbar {
-    background: var(--bg-sidebar);
-    border-bottom: 1px solid var(--border);
-    padding: 0.85rem 1.5rem;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 50;
-  }
-  .topbar-title { font-size: 1.1rem; font-weight: 800; color: #fff; }
-  .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
-  .btc-live-badge {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--btc-dim); border: 1px solid var(--btc-border);
-    border-radius: 20px; padding: 5px 12px;
-    font-size: 0.72rem; font-weight: 800; color: var(--btc);
-  }
-  .live-dot {
-    width: 6px; height: 6px; background: var(--green);
-    border-radius: 50%; animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
-  .hamburger {
-    display: none; background: none; border: none;
-    color: var(--text); cursor: pointer; padding: 4px;
-  }
-
-  /* ── PAGES ── */
-  .page { display: none; padding: 1.5rem; }
-  .page.active { display: block; }
-
-  /* ── KPI CARDS ── */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-  }
-  .kpi-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.1rem;
-    position: relative;
-    overflow: hidden;
-  }
-  .kpi-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    border-radius: var(--radius) var(--radius) 0 0;
-  }
-  .kpi-card.orange::before { background: linear-gradient(90deg, var(--btc), #e07a10); }
-  .kpi-card.green::before  { background: linear-gradient(90deg, var(--green), #059669); }
-  .kpi-card.blue::before   { background: linear-gradient(90deg, var(--blue), #3b82f6); }
-  .kpi-card.purple::before { background: linear-gradient(90deg, var(--purple), #7c3aed); }
-  .kpi-card.red::before    { background: linear-gradient(90deg, var(--red), #dc2626); }
-  .kpi-label {
-    font-size: 0.65rem; font-weight: 700; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.07em;
-    margin-bottom: 0.4rem;
-  }
-  .kpi-value {
-    font-size: 1.3rem; font-weight: 900; color: #fff;
-    line-height: 1.2; margin-bottom: 0.2rem;
-  }
-  .kpi-value.btc { color: var(--btc); }
-  .kpi-sub {
-    font-size: 0.68rem; color: var(--text-dim);
-  }
-  .kpi-badge {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 0.65rem; font-weight: 800;
-    border-radius: 5px; padding: 2px 6px;
-    margin-top: 3px;
-  }
-  .kpi-badge.up   { background: rgba(16,185,129,0.12); color: var(--green); }
-  .kpi-badge.down { background: rgba(239,68,68,0.12);  color: var(--red);   }
-
-  /* ── CHARTS ── */
-  .charts-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-  }
-  .charts-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  .chart-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.1rem;
-  }
-  .chart-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-  .chart-card-title {
-    font-size: 0.8rem; font-weight: 800; color: #fff;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .chart-card-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 1px; }
-
-  /* ── COMPRAS TABLE ── */
-  .page-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 1.25rem;
-  }
-  .page-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
-  .btn-primary {
-    display: flex; align-items: center; gap: 6px;
-    background: linear-gradient(135deg, var(--btc), #e07a10);
-    border: none; color: #000; font-weight: 800;
-    font-size: 0.78rem; padding: 0.6rem 1.1rem;
-    border-radius: 8px; cursor: pointer;
-    transition: opacity 0.15s;
-  }
-  .btn-primary:hover { opacity: 0.85; }
-  .btn-secondary {
-    display: flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-    color: var(--text); font-weight: 700; font-size: 0.75rem;
-    padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer;
-    transition: background 0.15s;
-  }
-  .btn-secondary:hover { background: rgba(255,255,255,0.1); }
-  .table-wrap {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-  }
-  table { width: 100%; border-collapse: collapse; }
-  thead { background: rgba(255,255,255,0.03); }
-  th {
-    padding: 0.7rem 1rem; text-align: left;
-    font-size: 0.65rem; font-weight: 800; color: var(--text-dim);
-    text-transform: uppercase; letter-spacing: 0.07em;
-    border-bottom: 1px solid var(--border);
-  }
-  td {
-    padding: 0.75rem 1rem;
-    font-size: 0.8rem; color: var(--text);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--bg-hover); }
-  .td-plat {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: var(--btc-dim); border: 1px solid var(--btc-border);
-    color: var(--btc); border-radius: 5px; padding: 2px 8px;
-    font-size: 0.68rem; font-weight: 700;
-  }
-  .td-sats { color: var(--btc); font-weight: 700; font-family: monospace; }
-  .td-delete {
-    background: none; border: none; color: var(--text-faint);
-    cursor: pointer; padding: 4px; border-radius: 5px;
-    transition: all 0.15s;
-  }
-  .td-delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
-
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); z-index: 200;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 1.5rem;
-    width: 100%; max-width: 420px; margin: 1rem;
-  }
-  .modal-title {
-    font-size: 1rem; font-weight: 800; color: #fff;
-    margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
-  }
-  .form-group { margin-bottom: 1rem; }
-  .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); margin-bottom: 0.35rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-input {
-    width: 100%; background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 0.65rem 0.9rem; color: var(--text);
-    font-size: 0.85rem; outline: none;
-    transition: border-color 0.15s;
-  }
-  .form-input:focus { border-color: var(--btc); }
-  .form-input option { background: #1a1f2e; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .form-hint { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.25rem; }
-  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
-  .modal-actions .btn-primary { flex: 1; justify-content: center; }
-  .modal-actions .btn-secondary { flex: 0; }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    text-align: center; padding: 3rem 1rem;
-    color: var(--text-dim);
-  }
-  .empty-state svg { margin-bottom: 1rem; opacity: 0.3; }
-  .empty-state h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
-  .empty-state p { font-size: 0.75rem; }
-
-  /* ── VITRINE ── */
-  .vitrine-card {
-    background: linear-gradient(135deg, #0d1117, #161b27);
-    border: 1px solid rgba(247,147,26,0.2);
-    border-radius: 16px; padding: 1.75rem;
-    text-align: center; max-width: 420px; margin: 0 auto;
-  }
-  .vitrine-title { font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem; }
-  .vitrine-subtitle { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1.5rem; }
-  .vitrine-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
-  .vitrine-kpi { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.85rem; }
-  .vitrine-kpi-label { font-size: 0.6rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
-  .vitrine-kpi-value { font-size: 1rem; font-weight: 900; color: #fff; }
-  .vitrine-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--btc-dim); border: 1px solid var(--btc-border); color: var(--btc); border-radius: 20px; padding: 5px 14px; font-size: 0.72rem; font-weight: 800; margin-bottom: 1rem; }
-  .vitrine-share-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, var(--btc), #e07a10); border: none; color: #000; font-weight: 800; font-size: 0.78rem; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; margin: 0 auto; transition: opacity 0.15s; }
-  .vitrine-share-btn:hover { opacity: 0.85; }
-
-  /* ── ANALISE ── */
-  .analise-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.25rem; }
-  .analise-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
-  .analise-stat-label { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.35rem; }
-  .analise-stat-value { font-size: 1.1rem; font-weight: 900; }
-
-  /* ── MOBILE ── */
-  @media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    .main-content { margin-left: 0; }
-    .hamburger { display: flex; }
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .charts-row { grid-template-columns: 1fr; }
-    .page { padding: 1rem; }
-    .analise-grid { grid-template-columns: repeat(2,1fr); }
-    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
-    .sidebar-overlay.open { display: block; }
-  }
-  @media (max-width: 480px) {
-    .kpi-grid { grid-template-columns: 1fr 1fr; }
-    .kpi-value { font-size: 1rem; }
-    table { font-size: 0.72rem; }
-    th, td { padding: 0.6rem 0.6rem; }
-  }
-
-  /* ── SPINNER ── */
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spin { animation: spin 0.8s linear infinite; }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    :root {
+        --btc: #F7931A;
+        --btc-dim: rgba(247,147,26,0.15);
+        --btc-border: rgba(247,147,26,0.35);
+        --green: #10B981;
+        --red: #EF4444;
+        --blue: #60A5FA;
+        --purple: #A78BFA;
+        --bg: #0a0e1a;
+        --bg-card: #111827;
+        --bg-sidebar: #0d1117;
+        --bg-hover: rgba(255,255,255,0.05);
+        --border: rgba(255,255,255,0.08);
+        --text: #F1F5F9;
+        --text-dim: rgba(255,255,255,0.45);
+        --text-faint: rgba(255,255,255,0.2);
+        --sidebar-w: 220px;
+        --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+    /* ── SIDEBAR ── */
+    .sidebar {
+        width: var(--sidebar-w);
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        z-index: 100;
+        transition: transform 0.25s ease;
+    }
+    .sidebar-logo {
+        padding: 1.4rem 1.2rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo-top {
+        display: flex; align-items: center; gap: 10px;
+        margin-bottom: 2px;
+    }
+    .sidebar-logo-icon {
+        width: 36px; height: 36px;
+        background: linear-gradient(135deg, #F7931A, #e07a10);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+    .sidebar-logo-name {
+        font-size: 1.05rem; font-weight: 900; color: #fff;
+        line-height: 1.1;
+    }
+    .sidebar-logo-name span { color: var(--btc); }
+    .sidebar-logo-sub {
+        font-size: 0.6rem; color: var(--text-dim);
+        font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+        padding-left: 46px;
+    }
+    .sidebar-nav { flex: 1; padding: 0.75rem 0.6rem; overflow-y: auto; }
+    .sidebar-nav-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 0.65rem 0.85rem;
+        border-radius: 9px;
+        cursor: pointer;
+        font-size: 0.82rem; font-weight: 600;
+        color: var(--text-dim);
+        transition: all 0.15s;
+        margin-bottom: 2px;
+        text-decoration: none;
+        user-select: none;
+    }
+    .sidebar-nav-item:hover { background: var(--bg-hover); color: #fff; }
+    .sidebar-nav-item.active { background: var(--btc-dim); color: var(--btc); border: 1px solid var(--btc-border); }
+    .sidebar-nav-item svg { flex-shrink: 0; }
+    .sidebar-footer {
+        padding: 0.75rem 0.6rem;
+        border-top: 1px solid var(--border);
+    }
+    .sidebar-user {
+        display: flex; align-items: center; gap: 8px;
+        padding: 0.5rem 0.85rem;
+        border-radius: 9px;
+    }
+    .sidebar-user-avatar {
+        width: 28px; height: 28px;
+        background: linear-gradient(135deg, var(--btc), #e07a10);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: 800; color: #000;
+    }
+    .sidebar-user-name { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); flex: 1; }
+    .sidebar-logout {
+        display: flex; align-items: center; gap: 10px;
+        padding: 0.6rem 0.85rem;
+        border-radius: 9px;
+        cursor: pointer;
+        font-size: 0.82rem; font-weight: 600;
+        color: var(--text-faint);
+        transition: all 0.15s;
+        margin-top: 2px;
+    }
+    .sidebar-logout:hover { background: rgba(239,68,68,0.1); color: var(--red); }
+    /* ── MAIN ── */
+    .main-content {
+        margin-left: var(--sidebar-w);
+        flex: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    .topbar {
+        background: var(--bg-sidebar);
+        border-bottom: 1px solid var(--border);
+        padding: 0.85rem 1.5rem;
+        display: flex; align-items: center; justify-content: space-between;
+        position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-title { font-size: 1.1rem; font-weight: 800; color: #fff; }
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+    .btc-live-badge {
+        display: flex; align-items: center; gap: 6px;
+        background: var(--btc-dim); border: 1px solid var(--btc-border);
+        border-radius: 20px; padding: 5px 12px;
+        font-size: 0.72rem; font-weight: 800; color: var(--btc);
+    }
+    .live-dot {
+        width: 6px; height: 6px; background: var(--green);
+        border-radius: 50%; animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+    .hamburger {
+        display: none; background: none; border: none;
+        color: var(--text); cursor: pointer; padding: 4px;
+    }
+    /* ── PAGES ── */
+    .page { display: none; padding: 1.5rem; }
+    .page.active { display: block; }
+    /* ── KPI CARDS ── */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .kpi-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .kpi-card.orange::before { background: linear-gradient(90deg, var(--btc), #e07a10); }
+    .kpi-card.green::before { background: linear-gradient(90deg, var(--green), #059669); }
+    .kpi-card.blue::before { background: linear-gradient(90deg, var(--blue), #3b82f6); }
+    .kpi-card.purple::before { background: linear-gradient(90deg, var(--purple), #7c3aed); }
+    .kpi-card.red::before { background: linear-gradient(90deg, var(--red), #dc2626); }
+    .kpi-label {
+        font-size: 0.65rem; font-weight: 700; color: var(--text-dim);
+        text-transform: uppercase; letter-spacing: 0.07em;
+        margin-bottom: 0.4rem;
+    }
+    .kpi-value {
+        font-size: 1.3rem; font-weight: 900; color: #fff;
+        line-height: 1.2; margin-bottom: 0.2rem;
+    }
+    .kpi-value.btc { color: var(--btc); }
+    .kpi-sub {
+        font-size: 0.68rem; color: var(--text-dim);
+    }
+    .kpi-badge {
+        display: inline-flex; align-items: center; gap: 3px;
+        font-size: 0.65rem; font-weight: 800;
+        border-radius: 5px; padding: 2px 6px;
+        margin-top: 3px;
+    }
+    .kpi-badge.up { background: rgba(16,185,129,0.12); color: var(--green); }
+    .kpi-badge.down { background: rgba(239,68,68,0.12); color: var(--red); }
+    /* ── CHARTS ── */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+    .charts-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .chart-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.1rem;
+    }
+    .chart-card-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    .chart-card-title {
+        font-size: 0.8rem; font-weight: 800; color: #fff;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .chart-card-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 1px; }
+    /* ── COMPRAS TABLE ── */
+    .page-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+    .page-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
+    .btn-primary {
+        display: flex; align-items: center; gap: 6px;
+        background: linear-gradient(135deg, var(--btc), #e07a10);
+        border: none; color: #000; font-weight: 800;
+        font-size: 0.78rem; padding: 0.6rem 1.1rem;
+        border-radius: 8px; cursor: pointer;
+        transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+        display: flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+        color: var(--text); font-weight: 700; font-size: 0.75rem;
+        padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+    .table-wrap {
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: var(--radius); overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: rgba(255,255,255,0.03); }
+    th {
+        padding: 0.7rem 1rem; text-align: left;
+        font-size: 0.65rem; font-weight: 800; color: var(--text-dim);
+        text-transform: uppercase; letter-spacing: 0.07em;
+        border-bottom: 1px solid var(--border);
+    }
+    td {
+        padding: 0.75rem 1rem;
+        font-size: 0.8rem; color: var(--text);
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg-hover); }
+    .td-plat {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: var(--btc-dim); border: 1px solid var(--btc-border);
+        color: var(--btc); border-radius: 5px; padding: 2px 8px;
+        font-size: 0.68rem; font-weight: 700;
+    }
+    .td-sats { color: var(--btc); font-weight: 700; font-family: monospace; }
+    .td-delete {
+        background: none; border: none; color: var(--text-faint);
+        cursor: pointer; padding: 4px; border-radius: 5px;
+        transition: all 0.15s;
+    }
+    .td-delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
+    /* ── MODAL ── */
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.7); z-index: 200;
+        align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: 16px; padding: 1.5rem;
+        width: 100%; max-width: 420px; margin: 1rem;
+    }
+    .modal-title {
+        font-size: 1rem; font-weight: 800; color: #fff;
+        margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
+    }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); margin-bottom: 0.35rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-input {
+        width: 100%; background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border); border-radius: 8px;
+        padding: 0.65rem 0.9rem; color: var(--text);
+        font-size: 0.85rem; outline: none;
+        transition: border-color 0.15s;
+    }
+    .form-input:focus { border-color: var(--btc); }
+    .form-input option { background: #1a1f2e; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .form-hint { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.25rem; }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+    .modal-actions .btn-primary { flex: 1; justify-content: center; }
+    .modal-actions .btn-secondary { flex: 0; }
+    /* ── EMPTY STATE ── */
+    .empty-state {
+        text-align: center; padding: 3rem 1rem;
+        color: var(--text-dim);
+    }
+    .empty-state svg { margin-bottom: 1rem; opacity: 0.3; }
+    .empty-state h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.75rem; }
+    /* ── VITRINE ── */
+    .vitrine-card {
+        background: linear-gradient(135deg, #0d1117, #161b27);
+        border: 1px solid rgba(247,147,26,0.2);
+        border-radius: 16px; padding: 1.75rem;
+        text-align: center; max-width: 420px; margin: 0 auto;
+    }
+    .vitrine-title { font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem; }
+    .vitrine-subtitle { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+    .vitrine-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .vitrine-kpi { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.85rem; }
+    .vitrine-kpi-label { font-size: 0.6rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+    .vitrine-kpi-value { font-size: 1rem; font-weight: 900; color: #fff; }
+    .vitrine-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--btc-dim); border: 1px solid var(--btc-border); color: var(--btc); border-radius: 20px; padding: 5px 14px; font-size: 0.72rem; font-weight: 800; margin-bottom: 1rem; }
+    .vitrine-share-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, var(--btc), #e07a10); border: none; color: #000; font-weight: 800; font-size: 0.78rem; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; margin: 0 auto; transition: opacity 0.15s; }
+    .vitrine-share-btn:hover { opacity: 0.85; }
+    /* ── ANALISE ── */
+    .analise-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.25rem; }
+    .analise-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+    .analise-stat-label { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.35rem; }
+    .analise-stat-value { font-size: 1.1rem; font-weight: 900; }
+    /* ── MOBILE BOTTOM NAV ── */
+    .mobile-bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        background: #0d1117;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        z-index: 200;
+        padding: 6px 0 env(safe-area-inset-bottom, 6px);
+        overflow-x: auto;
+    }
+    .mobile-bottom-nav::-webkit-scrollbar { display: none; }
+    .mobile-nav-inner {
+        display: flex;
+        min-width: max-content;
+        padding: 0 6px;
+        gap: 2px;
+    }
+    .mnav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: rgba(255,255,255,0.35);
+        font-size: 8.5px;
+        font-weight: 700;
+        white-space: nowrap;
+        gap: 3px;
+        min-width: 52px;
+        transition: color 0.15s, background 0.15s;
+    }
+    .mnav-item.active {
+        color: #F7931A;
+        background: rgba(247,147,26,0.12);
+    }
+    .mnav-item svg { flex-shrink: 0; }
+    @media (max-width: 900px) {
+        .sidebar { display: none !important; }
+        .main-content { margin-left: 0 !important; }
+        .hamburger { display: none !important; }
+        .mobile-bottom-nav { display: block; }
+        .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .charts-row { grid-template-columns: 1fr; }
+        .page { padding: 0.75rem; padding-bottom: 80px; }
+        .analise-grid { grid-template-columns: repeat(2,1fr); }
+        .sidebar-overlay { display: none !important; }
+    }
+    @media (max-width: 480px) {
+        .kpi-grid { grid-template-columns: 1fr 1fr; }
+        .kpi-value { font-size: 1rem; }
+        table { font-size: 0.72rem; }
+        th, td { padding: 0.6rem 0.6rem; }
+    }
+    /* ── SPINNER ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 0.8s linear infinite; }
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 </style>
 </head>
 <body>
-
 <!-- Sidebar overlay (mobile) -->
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
-
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-top">
-      <div class="sidebar-logo-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
-      </div>
-      <div>
-        <div class="sidebar-logo-name">Clube <span>DCA</span></div>
-      </div>
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-top">
+            <div class="sidebar-logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+            </div>
+            <div>
+                <div class="sidebar-logo-name">Clube <span>DCA</span></div>
+            </div>
+        </div>
+        <div class="sidebar-logo-sub">Bitcoin DCA Tracker</div>
     </div>
-    <div class="sidebar-logo-sub">Bitcoin DCA Tracker</div>
-  </div>
-
-  <nav class="sidebar-nav">
-    <div class="sidebar-nav-item active" onclick="showPage('dashboard', this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
+    <nav class="sidebar-nav">
+        <div class="sidebar-nav-item active" onclick="showPage('dashboard', this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('compras', this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Compras
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('analise', this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Analise
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('vitrine', this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Vitrine
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('admin', this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            Admin
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('cotacao', this)" style="color:#F59E0B;margin-top:2px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Cotacao BTC / Taxas
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('sinaisdefi', this)" style="color:#3B82F6;margin-top:2px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Sinais e DeFi
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('apoio', this)" style="color:#F59E0B;margin-top:2px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Apoiar
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('precojusto', this)" style="color:#22C55E;border-top:1px solid rgba(255,255,255,0.06);margin-top:6px;padding-top:12px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/></svg>
+            PrecoJusto
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('poolsdefi', this)" style="color:#8B5CF6;margin-top:2px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/></svg>
+            Pools / DeFi
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('streaming', this)" style="color:#EF4444;margin-top:2px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Streaming
+        </div>
+        <div class="sidebar-nav-item" onclick="showPage('carteira2030', this)" style="color:#F59E0B;margin-top:6px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;font-weight:900;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Carteira 2030
+        </div>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="sidebar-user-avatar">M</div>
+            <div class="sidebar-user-name">Marcos</div>
+        </div>
+        <div class="sidebar-logout" onclick="clearAllData()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Limpar Dados
+        </div>
     </div>
-    <div class="sidebar-nav-item" onclick="showPage('compras', this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Compras
-    </div>
-    <div class="sidebar-nav-item" onclick="showPage('analise', this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Analise
-    </div>
-    <div class="sidebar-nav-item" onclick="showPage('vitrine', this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      Vitrine
-    </div>
-    <div class="sidebar-nav-item" onclick="showPage('admin', this)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-      Admin
-    </div>
-    <div class="sidebar-nav-item" onclick="showPage('apoio', this)" style="color:#F59E0B;margin-top:2px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      Apoiar
-    </div>
-    <div class="sidebar-nav-item" onclick="showPage('precojusto', this)" style="color:#22C55E;border-top:1px solid rgba(255,255,255,0.06);margin-top:6px;padding-top:12px;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/></svg>
-      PrecoJusto
-    </div>
-  </nav>
-
-  <div class="sidebar-footer">
-    <div class="sidebar-user">
-      <div class="sidebar-user-avatar">M</div>
-      <div class="sidebar-user-name">Marcos</div>
-    </div>
-    <div class="sidebar-logout" onclick="clearAllData()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Limpar Dados
-    </div>
-  </div>
 </aside>
-
 <!-- Main -->
 <div class="main-content">
-  <!-- Topbar -->
-  <div class="topbar">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="hamburger" onclick="toggleSidebar()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="topbar-title" id="topbar-title">Dashboard</div>
-    </div>
-    <div class="topbar-right">
-      <div class="btc-live-badge">
-        <div class="live-dot"></div>
-        <span id="btc-price-topbar">BTC ...</span>
-      </div>
-      <button class="btn-secondary" onclick="addCompra()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Registrar DCA
-      </button>
-    </div>
-  </div>
-
-  <!-- ── DASHBOARD ── -->
-  <div id="page-dashboard" class="page active">
-    <!-- KPI Cards -->
-    <div class="kpi-grid">
-      <div class="kpi-card orange">
-        <div class="kpi-label">Total Investido</div>
-        <div class="kpi-value" id="kpi-total">R$ 0,00</div>
-        <div class="kpi-sub" id="kpi-compras-count">0 compras</div>
-      </div>
-      <div class="kpi-card orange">
-        <div class="kpi-label">BTC Acumulado</div>
-        <div class="kpi-value btc" id="kpi-sats">0 sats</div>
-        <div class="kpi-sub" id="kpi-btc">0.00000000 BTC</div>
-      </div>
-      <div class="kpi-card green">
-        <div class="kpi-label">Valor Atual</div>
-        <div class="kpi-value" id="kpi-valor-atual">R$ 0,00</div>
-        <div class="kpi-sub" id="kpi-valor-usd">$ 0,00</div>
-      </div>
-      <div class="kpi-card blue">
-        <div class="kpi-label">Preco Medio de Compra</div>
-        <div class="kpi-value" id="kpi-preco-medio">R$ 0</div>
-        <div class="kpi-sub" id="kpi-preco-atual">BTC agora: R$ 0</div>
-      </div>
-      <div class="kpi-card" id="kpi-pnl-card">
-        <div class="kpi-label">Lucro / Prejuizo</div>
-        <div class="kpi-value" id="kpi-pnl-brl">R$ 0,00</div>
-        <div id="kpi-pnl-badge" class="kpi-badge">0.00%</div>
-      </div>
-      <div class="kpi-card purple">
-        <div class="kpi-label">BTC Agora (USD)</div>
-        <div class="kpi-value" id="kpi-btc-usd">$ 0</div>
-        <div class="kpi-sub" id="kpi-usd-brl">USD/BRL: ...</div>
-      </div>
-    </div>
-
-    <!-- Equity Curve -->
-    <div class="chart-card" style="margin-bottom:1rem;">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            Curva de Equity
-          </div>
-          <div class="chart-card-sub">Valor do portfolio vs Total investido</div>
-        </div>
-      </div>
-      <canvas id="chart-equity" height="200"></canvas>
-    </div>
-
-    <!-- BTC Acumulado + Resultado Mensal -->
-    <div class="charts-row" style="margin-bottom:1rem;">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F7931A" stroke-width="2"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
-              Acumulo BTC
-            </div>
-            <div class="chart-card-sub">Sats acumulados mes a mes</div>
-          </div>
-        </div>
-        <canvas id="chart-btc-acum" height="200"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="3" width="4" height="18"/><rect x="9" y="8" width="4" height="13"/><rect x="16" y="13" width="4" height="8"/></svg>
-              Resultado Mensal
-            </div>
-            <div class="chart-card-sub">Lucro/Prejuizo por mes (BRL)</div>
-          </div>
-          <select id="year-filter" onchange="renderMonthlyChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
-        </div>
-        <canvas id="chart-monthly" height="200"></canvas>
-      </div>
-    </div>
-
-    <!-- TWR — Retorno Ponderado pelo Tempo -->
-    <div class="chart-card" style="margin-bottom:1rem;">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            TWR — Retorno Ponderado pelo Tempo
-          </div>
-          <div class="chart-card-sub">% retorno mensal (barras) + TWR acumulado (linha)</div>
-        </div>
-        <select id="twr-year-filter" onchange="renderTWRChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
-      </div>
-      <canvas id="chart-twr" height="180"></canvas>
-    </div>
-
-    <!-- ETH Acumulado + SOL Acumulado -->
-    <div class="charts-row">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#627EEA" stroke-width="2"><polygon points="12 2 2 7 12 22 22 7 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><line x1="2" y1="7" x2="22" y2="7"/></svg>
-              Acumulo ETH
-            </div>
-            <div class="chart-card-sub">ETH acumulado mes a mes</div>
-          </div>
-          <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.12);border:1px solid rgba(98,126,234,0.35);color:#627EEA;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            Atualizar
-          </button>
-        </div>
-        <canvas id="chart-eth-acum" height="200"></canvas>
-        <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo ETH para ver o grafico</span>
-          <button onclick="addCompraAtivo('ETH')" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.1);border:1px solid rgba(98,126,234,0.3);color:#627EEA;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            + ETH
-          </button>
-        </div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div>
-            <div class="chart-card-title">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9945FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              Acumulo SOL
-            </div>
-            <div class="chart-card-sub">SOL acumulado mes a mes</div>
-          </div>
-          <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.12);border:1px solid rgba(153,69,255,0.35);color:#9945FF;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-            Atualizar
-          </button>
-        </div>
-        <canvas id="chart-sol-acum" height="200"></canvas>
-        <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo SOL para ver o grafico</span>
-          <button onclick="addCompraAtivo('SOL')" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.3);color:#9945FF;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            + SOL
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── COMPRAS ── -->
-  <div id="page-compras" class="page">
-    <div class="page-header">
-      <div class="page-title">Minhas Compras</div>
-      <div style="display:flex;gap:0.5rem;">
-        <button class="btn-secondary" onclick="exportCSV()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Exportar CSV
-        </button>
-        <button class="btn-primary" onclick="addCompra()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Nova Compra
-        </button>
-      </div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Ativo</th>
-            <th>Plataforma</th>
-            <th>Investido (R$)</th>
-            <th>Preco (R$)</th>
-            <th>Quantidade</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="compras-tbody">
-          <tr>
-            <td colspan="7">
-              <div class="empty-state">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                <h3>Nenhuma compra registrada</h3>
-                <p>Clique em "Nova Compra" para comecar seu DCA</p>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ── ANALISE ── -->
-  <div id="page-analise" class="page">
-    <div class="page-header">
-      <div class="page-title">Analise do Portfolio</div>
-    </div>
-    <div class="analise-grid" id="analise-stats"></div>
-    <div class="charts-row">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div class="chart-card-title">Sats Acumulados por Mes</div>
-        </div>
-        <canvas id="chart-sats-monthly" height="220"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div class="chart-card-title">Preco Medio de Compra vs BTC</div>
-        </div>
-        <canvas id="chart-preco-medio" height="220"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── VITRINE ── -->
-  <div id="page-vitrine" class="page">
-    <div class="page-header">
-      <div class="page-title">Minha Vitrine DCA</div>
-    </div>
-    <div class="vitrine-card">
-      <div class="vitrine-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
-        Clube DCA
-      </div>
-      <div class="vitrine-title" id="vitrine-name">Marcos</div>
-      <div class="vitrine-subtitle">Acumulando Bitcoin com disciplina</div>
-      <div class="vitrine-kpi-grid">
-        <div class="vitrine-kpi">
-          <div class="vitrine-kpi-label">Total Investido</div>
-          <div class="vitrine-kpi-value" id="vitrine-total">R$ 0</div>
-        </div>
-        <div class="vitrine-kpi">
-          <div class="vitrine-kpi-label">BTC Acumulado</div>
-          <div class="vitrine-kpi-value" id="vitrine-sats">0 sats</div>
-        </div>
-        <div class="vitrine-kpi">
-          <div class="vitrine-kpi-label">Lucro/Prejuizo</div>
-          <div class="vitrine-kpi-value" id="vitrine-pnl">0%</div>
-        </div>
-        <div class="vitrine-kpi">
-          <div class="vitrine-kpi-label">Compras</div>
-          <div class="vitrine-kpi-value" id="vitrine-compras">0</div>
-        </div>
-      </div>
-      <button class="vitrine-share-btn" onclick="shareVitrine()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Compartilhar Vitrine
-      </button>
-    </div>
-  </div>
-
-  <!-- ── ADMIN ── -->
-  <div id="page-admin" class="page">
-    <div class="page-header">
-      <div class="page-title">Configuracoes</div>
-    </div>
-    <div style="display:grid;gap:1rem;max-width:480px;">
-      <!-- Google Drive Backup -->
-      <div class="chart-card" style="border-color:rgba(66,133,244,0.35);">
-        <div class="chart-card-title" style="margin-bottom:0.35rem;display:flex;align-items:center;gap:8px;">
-          <svg width="15" height="13" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L28 48.1H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.45 0c-1.35.8-2.5 1.9-3.3 3.3L1.2 43.6C.4 45 0 46.55 0 48.1h28z" fill="#00ac47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75L86.1 57.6c.8-1.4 1.2-2.95 1.2-4.5H59.3l5.9 11.4z" fill="#ea4335"/><path d="M43.65 25L57.85 0H29.45L15.25 25z" fill="#00832d"/><path d="M59.3 48.1H87.3l-13.75-23.8-14.25-23.8-14.2 24.5z" fill="#2684fc"/></svg>
-          Backup no Google Drive
-        </div>
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.5;">Salve e restaure seus dados automaticamente no Google Drive — acesse de qualquer celular ou PC.</div>
-        <div id="drive-status" style="display:none;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:0.5rem 0.75rem;margin-bottom:0.75rem;font-size:0.72rem;color:var(--green);">
-          <div class="live-dot"></div>
-          <span id="drive-status-text">Conectado ao Google Drive</span>
-        </div>
-        <div style="display:grid;gap:0.5rem;">
-          <button id="btn-drive-connect" onclick="driveConnect()" style="display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,#4285F4,#1a73e8);border:none;color:#fff;font-weight:800;font-size:0.78rem;padding:0.7rem;border-radius:8px;cursor:pointer;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-            Conectar com Google Drive
-          </button>
-          <div id="drive-actions" style="display:none;grid-template-columns:1fr 1fr;gap:0.5rem;">
-            <button onclick="driveSave()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Salvar no Drive
+    <!-- Topbar -->
+    <div class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="hamburger" onclick="toggleSidebar()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <button onclick="driveLoad()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Restaurar do Drive
+            <div class="topbar-title" id="topbar-title">Dashboard</div>
+        </div>
+        <div class="topbar-right">
+            <div class="btc-live-badge">
+                <div class="live-dot"></div>
+                <span id="btc-price-topbar">BTC ...</span>
+            </div>
+            <button class="btn-secondary" onclick="addCompra()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Registrar DCA
             </button>
-            <button onclick="driveDisconnect()" style="grid-column:1/-1;background:none;border:1px solid rgba(255,255,255,0.08);color:var(--text-faint);font-size:0.68rem;font-weight:600;padding:0.4rem;border-radius:8px;cursor:pointer;">
-              Desconectar
-            </button>
-          </div>
         </div>
-        <div id="drive-msg" style="margin-top:0.5rem;font-size:0.68rem;text-align:center;min-height:1.2rem;"></div>
-      </div>
-
-      <!-- Backup Local JSON -->
-      <div class="chart-card">
-        <div class="chart-card-title" style="margin-bottom:0.35rem;">Backup Local</div>
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Baixe seus dados como arquivo JSON para guardar no celular ou computador.</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-          <button class="btn-secondary" onclick="exportJSON()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Baixar JSON
-          </button>
-          <button class="btn-secondary" onclick="document.getElementById('json-import').click()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Restaurar JSON
-          </button>
-        </div>
-        <input type="file" id="json-import" accept=".json" onchange="importJSON(event)" style="display:none;">
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-card-title" style="margin-bottom:1rem;">Seu Nome na Vitrine</div>
-        <div style="display:flex;gap:0.5rem;">
-          <input class="form-input" id="admin-nome" placeholder="Ex: Marcos" style="flex:1;">
-          <button class="btn-primary" onclick="saveNome()">Salvar</button>
-        </div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-title" style="margin-bottom:0.35rem;">Importar CSV</div>
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Formato: data,plataforma,brl,btc_preco</div>
-        <input type="file" id="csv-import" accept=".csv" onchange="importCSV(event)" style="font-size:0.78rem;color:var(--text-dim);">
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-title" style="margin-bottom:0.35rem;color:var(--red);">Zona de Perigo</div>
-        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Apaga todas as compras registradas.</div>
-        <button class="btn-secondary" style="border-color:rgba(239,68,68,0.3);color:var(--red);" onclick="clearAllData()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-          Apagar Todos os Dados
-        </button>
-      </div>
     </div>
-  </div>
+    <!-- ── DASHBOARD ── -->
+    <div id="page-dashboard" class="page active">
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card orange">
+                <div class="kpi-label">Total Investido</div>
+                <div class="kpi-value" id="kpi-total">R$ 0,00</div>
+                <div class="kpi-sub" id="kpi-compras-count">0 compras</div>
+            </div>
+            <div class="kpi-card orange">
+                <div class="kpi-label">BTC Acumulado</div>
+                <div class="kpi-value btc" id="kpi-sats">0 sats</div>
+                <div class="kpi-sub" id="kpi-btc">0.00000000 BTC</div>
+            </div>
+            <div class="kpi-card green">
+                <div class="kpi-label">Valor Atual</div>
+                <div class="kpi-value" id="kpi-valor-atual">R$ 0,00</div>
+                <div class="kpi-sub" id="kpi-valor-usd">$ 0,00</div>
+            </div>
+            <div class="kpi-card blue">
+                <div class="kpi-label">Preco Medio de Compra</div>
+                <div class="kpi-value" id="kpi-preco-medio">R$ 0</div>
+                <div class="kpi-sub" id="kpi-preco-atual">BTC agora: R$ 0</div>
+            </div>
+            <div class="kpi-card" id="kpi-pnl-card">
+                <div class="kpi-label">Lucro / Prejuizo</div>
+                <div class="kpi-value" id="kpi-pnl-brl">R$ 0,00</div>
+                <div id="kpi-pnl-badge" class="kpi-badge">0.00%</div>
+            </div>
+            <div class="kpi-card purple">
+                <div class="kpi-label">BTC Agora (USD)</div>
+                <div class="kpi-value" id="kpi-btc-usd">$ 0</div>
+                <div class="kpi-sub" id="kpi-usd-brl">USD/BRL: ...</div>
+            </div>
+        </div>
+        <!-- Equity Curve -->
+        <div class="chart-card" style="margin-bottom:1rem;">
+            <div class="chart-card-header">
+                <div>
+                    <div class="chart-card-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                        Curva de Equity
+                    </div>
+                    <div class="chart-card-sub">Valor do portfolio vs Total investido</div>
+                </div>
+            </div>
+            <canvas id="chart-equity" height="200"></canvas>
+        </div>
+        <!-- BTC Acumulado + Resultado Mensal -->
+        <div class="charts-row" style="margin-bottom:1rem;">
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F7931A" stroke-width="2"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+                            Acumulo BTC
+                        </div>
+                        <div class="chart-card-sub">Sats acumulados mes a mes</div>
+                    </div>
+                </div>
+                <canvas id="chart-btc-acum" height="200"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="3" width="4" height="18"/><rect x="9" y="8" width="4" height="13"/><rect x="16" y="13" width="4" height="8"/></svg>
+                            Resultado Mensal
+                        </div>
+                        <div class="chart-card-sub">Lucro/Prejuizo por mes (BRL)</div>
+                    </div>
+                    <select id="year-filter" onchange="renderMonthlyChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
+                </div>
+                <canvas id="chart-monthly" height="200"></canvas>
+            </div>
+        </div>
+        <!-- TWR — Retorno Ponderado pelo Tempo -->
+        <div class="chart-card" style="margin-bottom:1rem;">
+            <div class="chart-card-header">
+                <div>
+                    <div class="chart-card-title">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        TWR — Retorno Ponderado pelo Tempo
+                    </div>
+                    <div class="chart-card-sub">% retorno mensal (barras) + TWR acumulado (linha)</div>
+                </div>
+                <select id="twr-year-filter" onchange="renderTWRChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
+            </div>
+            <canvas id="chart-twr" height="180"></canvas>
+        </div>
+        <!-- ETH Acumulado + SOL Acumulado -->
+        <div class="charts-row">
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#627EEA" stroke-width="2"><polygon points="12 2 2 7 12 22 22 7 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><line x1="2" y1="7" x2="22" y2="7"/></svg>
+                            Acumulo ETH
+                        </div>
+                        <div class="chart-card-sub">ETH acumulado mes a mes</div>
+                    </div>
+                    <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.12);border:1px solid rgba(98,126,234,0.35);color:#627EEA;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        Atualizar
+                    </button>
+                </div>
+                <canvas id="chart-eth-acum" height="200"></canvas>
+                <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo ETH para ver o grafico</span>
+                    <button onclick="addCompraAtivo('ETH')" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.1);border:1px solid rgba(98,126,234,0.3);color:#627EEA;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        + ETH
+                    </button>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-card-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9945FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            Acumulo SOL
+                        </div>
+                        <div class="chart-card-sub">SOL acumulado mes a mes</div>
+                    </div>
+                    <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.12);border:1px solid rgba(153,69,255,0.35);color:#9945FF;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        Atualizar
+                    </button>
+                </div>
+                <canvas id="chart-sol-acum" height="200"></canvas>
+                <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
+                    <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo SOL para ver o grafico</span>
+                    <button onclick="addCompraAtivo('SOL')" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.3);color:#9945FF;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        + SOL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ── COMPRAS ── -->
+    <div id="page-compras" class="page">
+        <div class="page-header">
+            <div class="page-title">Minhas Compras</div>
+            <div style="display:flex;gap:0.5rem;">
+                <button class="btn-secondary" onclick="exportCSV()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Exportar CSV
+                </button>
+                <button class="btn-primary" onclick="addCompra()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Nova Compra
+                </button>
+            </div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Ativo</th>
+                        <th>Plataforma</th>
+                        <th>Investido (R$)</th>
+                        <th>Preco (R$)</th>
+                        <th>Quantidade</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="compras-tbody">
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                <h3>Nenhuma compra registrada</h3>
+                                <p>Clique em "Nova Compra" para comecar seu DCA</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- ── ANALISE ── -->
+    <div id="page-analise" class="page">
+        <div class="page-header">
+            <div class="page-title">Analise do Portfolio</div>
+        </div>
+        <div class="analise-grid" id="analise-stats"></div>
+        <div class="charts-row">
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">Sats Acumulados por Mes</div>
+                </div>
+                <canvas id="chart-sats-monthly" height="220"></canvas>
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div class="chart-card-title">Preco Medio de Compra vs BTC</div>
+                </div>
+                <canvas id="chart-preco-medio" height="220"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- ── VITRINE ── -->
+    <div id="page-vitrine" class="page">
+        <div class="page-header">
+            <div class="page-title">Minha Vitrine DCA</div>
+        </div>
+        <div class="vitrine-card">
+            <div class="vitrine-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+                Clube DCA
+            </div>
+            <div class="vitrine-title" id="vitrine-name">Marcos</div>
+            <div class="vitrine-subtitle">Acumulando Bitcoin com disciplina</div>
+            <div class="vitrine-kpi-grid">
+                <div class="vitrine-kpi">
+                    <div class="vitrine-kpi-label">Total Investido</div>
+                    <div class="vitrine-kpi-value" id="vitrine-total">R$ 0</div>
+                </div>
+                <div class="vitrine-kpi">
+                    <div class="vitrine-kpi-label">BTC Acumulado</div>
+                    <div class="vitrine-kpi-value" id="vitrine-sats">0 sats</div>
+                </div>
+                <div class="vitrine-kpi">
+                    <div class="vitrine-kpi-label">Lucro/Prejuizo</div>
+                    <div class="vitrine-kpi-value" id="vitrine-pnl">0%</div>
+                </div>
+                <div class="vitrine-kpi">
+                    <div class="vitrine-kpi-label">Compras</div>
+                    <div class="vitrine-kpi-value" id="vitrine-compras">0</div>
+                </div>
+            </div>
+            <button class="vitrine-share-btn" onclick="shareVitrine()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Compartilhar Vitrine
+            </button>
+        </div>
+    </div>
+    <!-- ── ADMIN ── -->
+    <div id="page-admin" class="page">
+        <div class="page-header">
+            <div class="page-title">Configuracoes</div>
+        </div>
+        <div style="display:grid;gap:1rem;max-width:480px;">
+            <!-- Google Drive Backup -->
+            <div class="chart-card" style="border-color:rgba(66,133,244,0.35);">
+                <div class="chart-card-title" style="margin-bottom:0.35rem;display:flex;align-items:center;gap:8px;">
+                    <svg width="15" height="13" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L28 48.1H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.45 0c-1.35.8-2.5 1.9-3.3 3.3L1.2 43.6C.4 45 0 46.55 0 48.1h28z" fill="#00ac47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75L86.1 57.6c.8-1.4 1.2-2.95 1.2-4.5H59.3l5.9 11.4z" fill="#ea4335"/><path d="M43.65 25L57.85 0H29.45L15.25 25z" fill="#00832d"/><path d="M59.3 48.1H87.3l-13.75-23.8-14.25-23.8-14.2 24.5z" fill="#2684fc"/></svg>
+                    Backup no Google Drive
+                </div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.5;">Salve e restaure seus dados automaticamente no Google Drive — acesse de qualquer celular ou PC.</div>
+                <div id="drive-status" style="display:none;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:0.5rem 0.75rem;margin-bottom:0.75rem;font-size:0.72rem;color:var(--green);">
+                    <div class="live-dot"></div>
+                    <span id="drive-status-text">Conectado ao Google Drive</span>
+                </div>
+                <div style="display:grid;gap:0.5rem;">
+                    <button id="btn-drive-connect" onclick="driveConnect()" style="display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,#4285F4,#1a73e8);border:none;color:#fff;font-weight:800;font-size:0.78rem;padding:0.7rem;border-radius:8px;cursor:pointer;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Conectar com Google Drive
+                    </button>
+                    <div id="drive-actions" style="display:none;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                        <button onclick="driveSave()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Salvar no Drive
+                        </button>
+                        <button onclick="driveLoad()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Restaurar do Drive
+                        </button>
+                        <button onclick="driveDisconnect()" style="grid-column:1/-1;background:none;border:1px solid rgba(255,255,255,0.08);color:var(--text-faint);font-size:0.68rem;font-weight:600;padding:0.4rem;border-radius:8px;cursor:pointer;">
+                            Desconectar
+                        </button>
+                    </div>
+                </div>
+                <div id="drive-msg" style="margin-top:0.5rem;font-size:0.68rem;text-align:center;min-height:1.2rem;"></div>
+            </div>
+            <!-- Backup Local JSON -->
+            <div class="chart-card">
+                <div class="chart-card-title" style="margin-bottom:0.35rem;">Backup Local</div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Baixe seus dados como arquivo JSON para guardar no celular ou computador.</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                    <button class="btn-secondary" onclick="exportJSON()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Baixar JSON
+                    </button>
+                    <button class="btn-secondary" onclick="document.getElementById('json-import').click()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Restaurar JSON
+                    </button>
+                </div>
+                <input type="file" id="json-import" accept=".json" onchange="importJSON(event)" style="display:none;">
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-title" style="margin-bottom:1rem;">Seu Nome na Vitrine</div>
+                <div style="display:flex;gap:0.5rem;">
+                    <input class="form-input" id="admin-nome" placeholder="Ex: Marcos" style="flex:1;">
+                    <button class="btn-primary" onclick="saveNome()">Salvar</button>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-title" style="margin-bottom:0.35rem;">Importar CSV</div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Formato: data,plataforma,brl,btc_preco</div>
+                <input type="file" id="csv-import" accept=".csv" onchange="importCSV(event)" style="font-size:0.78rem;color:var(--text-dim);">
+            </div>
+            <div class="chart-card">
+                <div class="chart-card-title" style="margin-bottom:0.35rem;color:var(--red);">Zona de Perigo</div>
+                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Apaga todas as compras registradas.</div>
+                <button class="btn-secondary" style="border-color:rgba(239,68,68,0.3);color:var(--red);" onclick="clearAllData()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                    Apagar Todos os Dados
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-
 <!-- Page PrecoJusto -->
-<div id="page-apoio" class="page" style="padding:1rem;">
-  <div style="text-align:center;margin-bottom:1.25rem;">
-    <div style="width:54px;height:54px;background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;box-shadow:0 0 22px rgba(245,158,11,0.3);">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-    </div>
-    <div style="font-size:1.15rem;font-weight:900;color:#fff;margin-bottom:0.3rem;">Apoiar o Projeto</div>
-    <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);line-height:1.55;max-width:320px;margin:0 auto;">Este projeto e mantido de forma independente, sem anuncios ou investidores. Se ele te ajudou, qualquer contribuicao faz diferenca.</div>
-  </div>
-
-  <!-- PIX -->
-  <div style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
-      <div style="width:34px;height:34px;background:rgba(34,197,94,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      </div>
-      <div><div style="font-size:0.78rem;font-weight:800;color:#22C55E;">PIX</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">Chave UUID</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=127d59fc-1f37-4e8e-9fd4-295e1883727b&bgcolor=0d1117&color=22C55E" style="border-radius:8px;border:1px solid rgba(34,197,94,0.2);width:70px;height:70px;" alt="QR PIX">
-      <div style="flex:1;">
-        <div style="font-size:0.6rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;line-height:1.5;">127d59fc-1f37-4e8e-9fd4-295e1883727b</div>
-        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('127d59fc-1f37-4e8e-9fd4-295e1883727b').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);color:#22C55E;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar chave
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Lightning -->
-  <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
-      <div style="width:34px;height:34px;background:rgba(245,158,11,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      </div>
-      <div><div style="font-size:0.78rem;font-weight:800;color:#F59E0B;">Bitcoin Lightning</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">Instantaneo, taxa zero</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=cloggedparrot01@walletofsatoshi.com&bgcolor=0d1117&color=F59E0B" style="border-radius:8px;border:1px solid rgba(245,158,11,0.2);width:70px;height:70px;" alt="QR Lightning">
-      <div style="flex:1;">
-        <div style="font-size:0.6rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">cloggedparrot01@walletofsatoshi.com</div>
-        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('cloggedparrot01@walletofsatoshi.com').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);color:#F59E0B;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar endereco
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- BTC on-chain -->
-  <div style="background:rgba(247,147,26,0.07);border:1px solid rgba(247,147,26,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
-      <div style="width:34px;height:34px;background:rgba(247,147,26,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F7931A" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 8h4a2 2 0 0 1 0 4H9v4h4a2 2 0 0 0 0-4"/><line x1="9" y1="12" x2="13" y2="12"/></svg>
-      </div>
-      <div><div style="font-size:0.78rem;font-weight:800;color:#F7931A;">Bitcoin On-chain</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">Rede Bitcoin nativa</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=bc1q3zf09xtensa5kag3nz6jsvqyle3sgnmns0j9n5&bgcolor=0d1117&color=F7931A" style="border-radius:8px;border:1px solid rgba(247,147,26,0.2);width:70px;height:70px;" alt="QR BTC">
-      <div style="flex:1;">
-        <div style="font-size:0.55rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">bc1q3zf09xtensa5kag3nz6jsvqyle3sgnmns0j9n5</div>
-        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('bc1q3zf09xtensa5kag3nz6jsvqyle3sgnmns0j9n5').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(247,147,26,0.12);border:1px solid rgba(247,147,26,0.25);color:#F7931A;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar endereco
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- EVM -->
-  <div style="background:rgba(98,126,234,0.07);border:1px solid rgba(98,126,234,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
-      <div style="width:34px;height:34px;background:rgba(98,126,234,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#627EEA" stroke-width="2"><polygon points="12 2 2 19 22 19"/></svg>
-      </div>
-      <div><div style="font-size:0.78rem;font-weight:800;color:#627EEA;">Ethereum / Polygon EVM</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">ETH, MATIC, USDC, USDT</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=0xAd944bA180610F1Fe43151eD81c0084C918c68e1&bgcolor=0d1117&color=627EEA" style="border-radius:8px;border:1px solid rgba(98,126,234,0.2);width:70px;height:70px;" alt="QR EVM">
-      <div style="flex:1;">
-        <div style="font-size:0.55rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">0xAd944bA180610F1Fe43151eD81c0084C918c68e1</div>
-        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('0xAd944bA180610F1Fe43151eD81c0084C918c68e1').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(98,126,234,0.12);border:1px solid rgba(98,126,234,0.25);color:#627EEA;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar endereco
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Solana -->
-  <div style="background:rgba(153,69,255,0.07);border:1px solid rgba(153,69,255,0.2);border-radius:14px;padding:1rem;margin-bottom:1rem;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
-      <div style="width:34px;height:34px;background:rgba(153,69,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9945FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
-      </div>
-      <div><div style="font-size:0.78rem;font-weight:800;color:#9945FF;">Solana</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">SOL, USDC-SPL</div></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=EtSD7W7YG36ZuMAAX6bwJYJ9keciRK7cP7rJiadiZdmm&bgcolor=0d1117&color=9945FF" style="border-radius:8px;border:1px solid rgba(153,69,255,0.2);width:70px;height:70px;" alt="QR SOL">
-      <div style="flex:1;">
-        <div style="font-size:0.55rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">EtSD7W7YG36ZuMAAX6bwJYJ9keciRK7cP7rJiadiZdmm</div>
-        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('EtSD7W7YG36ZuMAAX6bwJYJ9keciRK7cP7rJiadiZdmm').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(153,69,255,0.12);border:1px solid rgba(153,69,255,0.25);color:#9945FF;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copiar endereco
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div style="text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.25);line-height:1.5;">Obrigado por usar e apoiar o Clube DCA.</div>
-</div>
-
-<div id="page-precojusto" class="page" style="padding:1rem;">
-  <!-- Hero banner -->
-  <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0a1a12 0%,#0d1117 50%,#0a1512 100%);border:1px solid rgba(34,197,94,0.2);border-radius:16px;padding:2rem 1.2rem 1.5rem;margin-bottom:1rem;">
-    <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(34,197,94,0.12),transparent 70%);border-radius:50%;pointer-events:none;"></div>
-    <div style="text-align:center;position:relative;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:0.85rem;">
-        <div style="width:50px;height:50px;background:linear-gradient(135deg,#22C55E,#16a34a);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(34,197,94,0.35);">
-          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/><path d="M19 6.5l2 1.5v3l-2 1"/></svg>
-        </div>
-        <div style="text-align:left;">
-          <div style="font-size:1.5rem;font-weight:900;color:#fff;line-height:1.1;">Preco<span style="color:#22C55E;">Justo</span></div>
-          <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Combustivel e Medicamentos</div>
-        </div>
-      </div>
-      <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-bottom:1.25rem;line-height:1.5;">Encontre o menor preco de combustivel e medicamentos perto de voce em tempo real.</div>
-      <a href="https://site-combustai-620634786284.southamerica-east1.run.app" target="_blank"
-         style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#22C55E,#16a34a);color:#000;font-weight:900;font-size:0.85rem;padding:0.8rem 1.5rem;border-radius:12px;text-decoration:none;box-shadow:0 4px 16px rgba(34,197,94,0.3);">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Abrir PrecoJusto
-      </a>
-    </div>
-  </div>
-
-  <!-- Cards de categoria -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
-    <!-- Combustivel -->
-    <a href="https://site-combustai-620634786284.southamerica-east1.run.app" target="_blank" style="text-decoration:none;">
-      <div style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(249,115,22,0.06));border:1px solid rgba(245,158,11,0.3);border-radius:14px;padding:1rem;text-align:center;">
-        <div style="width:42px;height:42px;background:rgba(245,158,11,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/><path d="M19 6.5l2 1.5v3l-2 1"/></svg>
-        </div>
-        <div style="font-size:0.85rem;font-weight:900;color:#F59E0B;margin-bottom:4px;">Combustivel</div>
-        <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">Gasolina, Etanol, Diesel, GNV</div>
-        <div style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;">
-          <span style="background:rgba(245,158,11,0.18);color:#F59E0B;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">G</span>
-          <span style="background:rgba(16,185,129,0.18);color:#10B981;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">E</span>
-          <span style="background:rgba(59,130,246,0.18);color:#60A5FA;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">D</span>
-          <span style="background:rgba(139,92,246,0.18);color:#A78BFA;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">GNV</span>
-        </div>
-      </div>
-    </a>
-    <!-- Medicamentos -->
-    <a href="https://site-combustai-620634786284.southamerica-east1.run.app" target="_blank" style="text-decoration:none;">
-      <div style="background:linear-gradient(135deg,rgba(236,72,153,0.1),rgba(168,85,247,0.06));border:1px solid rgba(236,72,153,0.3);border-radius:14px;padding:1rem;text-align:center;">
-        <div style="width:42px;height:42px;background:rgba(236,72,153,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EC4899" stroke-width="2.2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/><path d="M13 13h4M15 11v4"/></svg>
-        </div>
-        <div style="font-size:0.85rem;font-weight:900;color:#EC4899;margin-bottom:4px;">Medicamentos</div>
-        <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">Farmacias perto de voce</div>
+<div id="page-cotacao" class="page" style="padding:1rem;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
         <div>
-          <span style="background:rgba(236,72,153,0.18);color:#EC4899;border-radius:4px;padding:2px 8px;font-size:0.55rem;font-weight:800;">TEMPO REAL</span>
+            <div style="font-size:1rem;font-weight:900;">Cotacao BTC / Taxas</div>
+            <div style="font-size:11px;color:var(--text-dim);" id="cotacao-ultima-atualizacao">Atualizando...</div>
         </div>
-      </div>
-    </a>
-  </div>
-
-  <!-- Features -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
-      <div style="width:30px;height:30px;background:rgba(34,197,94,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-      </div>
-      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Geolocalizacao</div>
-      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">Detecta onde voce esta</div>
+        <button onclick="atualizarCotacoes()" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:7px 14px;font-size:11px;font-weight:800;color:#F59E0B;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Atualizar
+        </button>
     </div>
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
-      <div style="width:30px;height:30px;background:rgba(96,165,250,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-      </div>
-      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Filtros</div>
-      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">Raio, preco e horas</div>
+    <!-- Alerta de Arbitragem -->
+    <div id="arb-alert" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:900;color:#EF4444;margin-bottom:4px;">Oportunidade de Arbitragem detectada</div>
+        <div id="arb-detalhe" style="font-size:10px;color:#f87171;line-height:1.6;"></div>
     </div>
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
-      <div style="width:30px;height:30px;background:rgba(245,158,11,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><rect x="2" y="3" width="4" height="18"/><rect x="9" y="8" width="4" height="13"/><rect x="16" y="13" width="4" height="8"/></svg>
-      </div>
-      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Ranking ANP</div>
-      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">Media por estado (27 UFs)</div>
+    <!-- Tabela de cotações -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Comparativo de Precos em Tempo Real</div>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:520px;" id="cotacao-table">
+            <thead>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                    <th style="text-align:left;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Exchange</th>
+                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Preco BTC (USD)</th>
+                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Taxa Compra</th>
+                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Taxa Saque</th>
+                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Spread</th>
+                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Custo Real</th>
+                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Badge</th>
+                </tr>
+            </thead>
+            <tbody id="cotacao-tbody">
+                <tr><td colspan="7" style="text-align:center;padding:24px;color:#555;"><div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:16px;height:16px;border:2px solid rgba(245,158,11,.3);border-top-color:#F59E0B;border-radius:50%;animation:spin 1s linear infinite;"></div> Buscando cotacoes...</div></td></tr>
+            </tbody>
+        </table>
     </div>
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
-      <div style="width:30px;height:30px;background:rgba(239,68,68,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Tempo real</div>
-      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">NF-e dos postos (BA)</div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Nova Compra / Editar Compra -->
-<div class="modal-overlay" id="modal-compra">
-  <div class="modal">
-    <div class="modal-title" id="modal-title">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--btc)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Registrar Compra DCA
-    </div>
-    <!-- Ativo -->
-    <div class="form-group">
-      <label class="form-label">Ativo</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
-        <button id="btn-ativo-BTC" onclick="setAtivo('BTC')" style="padding:0.55rem;border-radius:8px;border:2px solid var(--btc);background:var(--btc-dim);color:var(--btc);font-weight:800;font-size:0.8rem;cursor:pointer;">BTC</button>
-        <button id="btn-ativo-ETH" onclick="setAtivo('ETH')" style="padding:0.55rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.4);font-weight:700;font-size:0.8rem;cursor:pointer;">ETH</button>
-        <button id="btn-ativo-SOL" onclick="setAtivo('SOL')" style="padding:0.55rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.4);font-weight:700;font-size:0.8rem;cursor:pointer;">SOL</button>
-      </div>
-    </div>
-    <!-- Data -->
-    <div class="form-group">
-      <label class="form-label">Data da Compra</label>
-      <input type="date" class="form-input" id="f-data" onchange="onDateChange()">
-    </div>
-    <!-- Valor + Preco -->
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Valor Investido (R$)</label>
-        <input type="number" class="form-input" id="f-brl" placeholder="500" min="0" step="0.01" oninput="calcSatsPreview()">
-      </div>
-      <div class="form-group">
-        <label class="form-label" id="f-preco-label">Preco BTC</label>
-        <!-- Toggle BRL/USD -->
-        <div style="display:flex;gap:4px;margin-bottom:5px;">
-          <button id="btn-cur-BRL" onclick="setCurrency('BRL')" style="flex:1;padding:3px 0;border-radius:5px;border:1px solid var(--btc);background:var(--btc-dim);color:var(--btc);font-size:0.65rem;font-weight:800;cursor:pointer;">R$ BRL</button>
-          <button id="btn-cur-USD" onclick="setCurrency('USD')" style="flex:1;padding:3px 0;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.35);font-size:0.65rem;font-weight:700;cursor:pointer;">$ USD</button>
+    <!-- Calculadora de custo real -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Calculadora — Qual Exchange Entrega Mais BTC?</div>
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <div style="flex:1;min-width:120px;">
+                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:5px;">VALOR (USD)</div>
+                <input id="calc-valor" type="number" value="500" min="10" style="width:100%;background:rgba(255,255,255,.06);border:1px solid #333;border-radius:8px;padding:9px 11px;font-size:13px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
+            </div>
+            <div style="flex:1;min-width:120px;">
+                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:5px;">REDE DE SAQUE</div>
+                <select id="calc-rede" style="width:100%;background:#1a1a1f;border:1px solid #333;border-radius:8px;padding:9px 11px;font-size:12px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
+                    <option value="BTC">Bitcoin (BTC)</option>
+                    <option value="Lightning">Lightning Network</option>
+                    <option value="BEP20">BEP-20 (BSC)</option>
+                    <option value="ERC20">ERC-20 (ETH)</option>
+                </select>
+            </div>
+            <div style="display:flex;align-items:flex-end;">
+                <button onclick="calcularCustoReal()" style="background:linear-gradient(135deg,#F59E0B,#D97706);border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:900;color:#000;cursor:pointer;white-space:nowrap;">Calcular</button>
+            </div>
         </div>
-        <input type="number" class="form-input" id="f-preco" placeholder="Auto" min="0" step="0.01" oninput="calcSatsPreview()">
-        <div class="form-hint" id="f-preco-hint">Clique em "Cotacao atual"</div>
-      </div>
+        <div id="calc-resultado"></div>
     </div>
-    <!-- Plataforma -->
-    <div class="form-group">
-      <label class="form-label">Plataforma</label>
-      <select class="form-input" id="f-plat">
-        <option>Depix</option><option>Picnic</option><option>Binance</option>
-        <option>Mercado Bitcoin</option><option>Foxbit</option><option>NovaDAX</option>
-        <option>BitcoinTrade</option><option>Cripto.com</option><option>Outro</option>
-      </select>
+    <!-- Redes de saque -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Comparativo de Redes para Saque</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px;">
+        <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px;">
+            <div style="font-size:10px;font-weight:900;color:#F59E0B;margin-bottom:6px;">Bitcoin (BTC)</div>
+            <div style="font-size:11px;color:#888;">Taxa: ~0.0002 BTC</div>
+            <div style="font-size:11px;color:#888;">Tempo: 20–40 min</div>
+            <div style="font-size:9px;color:#555;margin-top:4px;">Mais seguro</div>
+        </div>
+        <div style="background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:12px;">
+            <div style="font-size:10px;font-weight:900;color:#A855F7;margin-bottom:6px;">Lightning</div>
+            <div style="font-size:11px;color:#888;">Taxa: quase zero</div>
+            <div style="font-size:11px;color:#888;">Tempo: instantaneo</div>
+            <div style="font-size:9px;color:#555;margin-top:4px;">Melhor para pequenos</div>
+        </div>
+        <div style="background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.2);border-radius:12px;padding:12px;">
+            <div style="font-size:10px;font-weight:900;color:#EAB308;margin-bottom:6px;">BEP-20 (BSC)</div>
+            <div style="font-size:11px;color:#888;">Taxa: ~$0,10</div>
+            <div style="font-size:11px;color:#888;">Tempo: 1–5 min</div>
+            <div style="font-size:9px;color:#555;margin-top:4px;">Mais barato</div>
+        </div>
+        <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px;">
+            <div style="font-size:10px;font-weight:900;color:#3B82F6;margin-bottom:6px;">ERC-20 (ETH)</div>
+            <div style="font-size:11px;color:#888;">Taxa: ~$2–5</div>
+            <div style="font-size:11px;color:#888;">Tempo: 5–15 min</div>
+            <div style="font-size:9px;color:#555;margin-top:4px;">Ampla compatibilidade</div>
+        </div>
     </div>
-    <!-- Preview unidades -->
-    <div id="sats-preview" style="background:var(--btc-dim);border:1px solid var(--btc-border);border-radius:8px;padding:0.65rem;font-size:0.78rem;color:var(--btc);font-weight:700;display:none;margin-bottom:0.5rem;text-align:center;"></div>
-    <!-- Botoes de cotacao -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem;">
-      <button class="btn-secondary" style="justify-content:center;font-size:0.68rem;" onclick="useLivePrice()">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Cotacao atual
-      </button>
-      <button class="btn-secondary" id="btn-hist" style="justify-content:center;font-size:0.68rem;color:#60A5FA;border-color:rgba(96,165,250,0.35);" onclick="fetchHistoricalPrice()">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg>
-        Preco historico
-      </button>
+    <!-- Indice de Custo Real BTC -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Indice de Custo Real do Bitcoin (por $1.000 investido)</div>
+    <div id="indice-custo" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px;margin-bottom:8px;"><div style="text-align:center;color:#555;font-size:11px;">Aguardando cotacoes...</div></div>
+    <div style="font-size:9px;color:#444;text-align:right;margin-bottom:16px;">Custo real = preco × (1 + taxa%) + taxa_saque_usd</div>
+    <!-- ===================== RADAR DA REDE BITCOIN ===================== -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;margin-top:4px;">Radar da Rede Bitcoin — Mempool ao Vivo</div>
+    <!-- Semaforo + stats -->
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+            <!-- Semaforo -->
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div id="mempool-semaforo" style="width:14px;height:14px;border-radius:50%;background:#555;box-shadow:0 0 8px #555;flex-shrink:0;transition:background .4s,box-shadow .4s;"></div>
+                <div>
+                    <div id="mempool-status-label" style="font-size:13px;font-weight:900;color:#888;">Carregando...</div>
+                    <div id="mempool-status-sub" style="font-size:9px;color:#555;margin-top:1px;">Consultando mempool.space</div>
+                </div>
+            </div>
+            <button onclick="atualizarMempool()" style="background:rgba(247,147,26,.1);border:1px solid rgba(247,147,26,.25);border-radius:8px;padding:6px 12px;font-size:10px;font-weight:800;color:#F7931A;cursor:pointer;display:flex;align-items:center;gap:5px;">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                Atualizar
+            </button>
+        </div>
+        <!-- Stats grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:7px;" id="mempool-stats-grid">
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Rapida</div>
+                <div id="mp-fee-fast" style="font-size:16px;font-weight:900;color:#EF4444;">—</div>
+                <div style="font-size:8px;color:#555;">sat/vB · ~10min</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Media</div>
+                <div id="mp-fee-mid" style="font-size:16px;font-weight:900;color:#F59E0B;">—</div>
+                <div style="font-size:8px;color:#555;">sat/vB · ~30min</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Economica</div>
+                <div id="mp-fee-econ" style="font-size:16px;font-weight:900;color:#22C55E;">—</div>
+                <div style="font-size:8px;color:#555;">sat/vB · ~2h</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
+                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Pendentes</div>
+                <div id="mp-pending" style="font-size:16px;font-weight:900;color:#A855F7;">—</div>
+                <div style="font-size:8px;color:#555;">txs na mempool</div>
+            </div>
+        </div>
+        <div id="mempool-ts" style="font-size:8px;color:#333;text-align:right;margin-top:8px;">—</div>
     </div>
-    <div class="modal-actions">
-      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
-      <button class="btn-primary" onclick="saveCompra()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Salvar Compra
-      </button>
+    <!-- Calculadora de taxa de saque -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Calculadora de Saque On-Chain</div>
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px;margin-bottom:10px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <div style="flex:1;min-width:110px;">
+                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:4px;">VALOR (BTC)</div>
+                <input id="saque-btc" type="number" value="0.01" step="0.001" min="0.0001" style="width:100%;background:rgba(255,255,255,.06);border:1px solid #333;border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
+            </div>
+            <div style="display:flex;align-items:flex-end;">
+                <button onclick="calcularSaque()" style="background:linear-gradient(135deg,#F7931A,#D97706);border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:900;color:#000;cursor:pointer;white-space:nowrap;">Calcular</button>
+            </div>
+        </div>
+        <div id="saque-resultado"></div>
     </div>
-  </div>
+    <!-- Melhor horario -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Melhor Horario para Sacar Bitcoin</div>
+    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px;margin-bottom:10px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#22C55E;">Madrugada (0h–6h BRT)</b> — menor concorrencia, taxas geralmente baixas</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#22C55E;">Domingo de madrugada</b> — historicamente a taxa mais baixa da semana</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:#F59E0B;box-shadow:0 0 6px #F59E0B;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#F59E0B;">Tarde BRT (14h–18h)</b> — coincide com hora de pico dos EUA, taxas medias</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="width:10px;height:10px;border-radius:50%;background:#EF4444;box-shadow:0 0 6px #EF4444;flex-shrink:0;"></div>
+                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#EF4444;">Dias uteis tarde NY (16h–20h ET)</b> — maior congestionamento, evitar</div>
+            </div>
+        </div>
+        <div style="margin-top:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:8px;padding:8px 10px;">
+            <div style="font-size:9px;color:#22C55E;font-weight:700;" id="melhor-horario-agora">Carregando recomendacao...</div>
+        </div>
+    </div>
+    <!-- On-chain vs Lightning -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">On-Chain vs Lightning Network</div>
+    <div style="overflow-x:auto;margin-bottom:14px;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:320px;">
+            <thead>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+                    <th style="text-align:left;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Rede</th>
+                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Taxa</th>
+                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Tempo</th>
+                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Ideal para</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.05);" id="onchain-row">
+                    <td style="padding:9px 8px;"><span style="font-weight:800;color:#F7931A;">Bitcoin On-Chain</span></td>
+                    <td style="padding:9px 8px;text-align:center;" id="ln-compare-onchain">—</td>
+                    <td style="padding:9px 8px;text-align:center;color:#888;">20–60 min</td>
+                    <td style="padding:9px 8px;text-align:center;font-size:9px;color:#888;">Valores altos</td>
+                </tr>
+                <tr>
+                    <td style="padding:9px 8px;"><span style="font-weight:800;color:#A855F7;">Lightning Network</span></td>
+                    <td style="padding:9px 8px;text-align:center;"><span style="color:#22C55E;font-weight:800;">~$0,01</span></td>
+                    <td style="padding:9px 8px;text-align:center;color:#22C55E;font-weight:700;">Instantaneo</td>
+                    <td style="padding:9px 8px;text-align:center;font-size:9px;color:#888;">Qualquer valor</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- ===================== /RADAR DA REDE BITCOIN ===================== -->
+    <!-- Lightning Friendly Exchanges -->
+    <div style="background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(99,102,241,.05));border:1px solid rgba(139,92,246,.25);border-radius:16px;padding:14px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+            <div style="width:32px;height:32px;background:linear-gradient(135deg,#8B5CF6,#6366F1);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+                <div style="font-size:12px;font-weight:900;color:#A855F7;">Lightning Friendly Exchanges</div>
+                <div style="font-size:9px;color:#666;">Ranking de suporte a Lightning Network</div>
+            </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <!-- Binance -->
+            <a href="https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=pt&ref=GRO_28502_X3ASN" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#F0B90B;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#F0B90B;">Binance</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Deposito LN</span>
+                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Saque LN</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#22C55E" stroke="#22C55E" stroke-width="1"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                </div>
+            </a>
+            <!-- OKX -->
+            <a href="https://okx.com/pt-br/join/5126561" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#00B4D8;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#00B4D8;">OKX</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Deposito LN</span>
+                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Saque LN</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#22C55E" stroke="#22C55E" stroke-width="1"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                </div>
+            </a>
+            <!-- Bybit -->
+            <a href="https://bybit.com/invite?ref=6MOOPN" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#F7A600;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#F7A600;">Bybit</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(234,179,8,.15);color:#EAB308;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Parcial</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                </div>
+            </a>
+            <!-- Coinbase -->
+            <a href="https://coinbase.com/join/U43LRXQ?src=android-whatsapp" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#0052FF;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#0052FF;">Coinbase</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(234,179,8,.15);color:#EAB308;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Coinbase One (pago)</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                </div>
+            </a>
+            <!-- Kraken -->
+            <a href="https://invite.kraken.com/JDNW/e5jtbd5m" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#5741D9;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#A78BFA;">Kraken</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(239,68,68,.12);color:#f87171;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Nao suporta LN</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                </div>
+            </a>
+            <!-- MB -->
+            <a href="https://conta.mercadobitcoin.com.br/cadastro?mgm_token=96636f12fbd09c554e2007eefd549d5d34824b79cac558f4dee57a093e1ab450&utm_campaign=mgm&utm_source=link-copy&utm_medium=app" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#F7931A;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#F7931A;">Mercado Bitcoin</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(239,68,68,.12);color:#f87171;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Nao suporta LN</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                </div>
+            </a>
+            <!-- NovaDAX -->
+            <a href="https://www.novadax.com.br/sign?c=TAL7H3&s=1" target="_blank" style="text-decoration:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="width:7px;height:7px;border-radius:50%;background:#00C7B1;"></div>
+                        <span style="font-size:11px;font-weight:800;color:#00C7B1;">NovaDAX</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <span style="background:rgba(239,68,68,.12);color:#f87171;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Nao suporta LN</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <!-- Simulador de Saque Lightning -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Simulador de Saque Lightning</div>
+    <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.18);border-radius:14px;padding:14px;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end;">
+            <div style="flex:1;min-width:100px;">
+                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:5px;">VALOR PARA SACAR (BTC)</div>
+                <input id="ln-valor" type="number" value="0.01" step="0.001" min="0.0001" style="width:100%;background:rgba(255,255,255,.06);border:1px solid #333;border-radius:8px;padding:9px 11px;font-size:13px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
+            </div>
+            <div>
+                <button onclick="simularSaqueLN()" style="background:linear-gradient(135deg,#8B5CF6,#6366F1);border:none;border-radius:8px;padding:10px 16px;font-size:12px;font-weight:900;color:#fff;cursor:pointer;">Simular</button>
+            </div>
+        </div>
+        <div id="ln-resultado">
+            <div style="font-size:10px;color:#666;">Clique em Simular para ver resultado.</div>
+        </div>
+    </div>
+    <!-- Carteiras Lightning recomendadas -->
+    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Carteiras Lightning Recomendadas</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px;margin-bottom:16px;">
+        <a href="https://www.walletofsatoshi.com" target="_blank" style="text-decoration:none;">
+            <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px;cursor:pointer;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    <span style="font-size:11px;font-weight:900;color:#F59E0B;">Wallet of Satoshi</span>
+                </div>
+                <div style="font-size:9px;color:#888;line-height:1.5;">Mais simples do mercado. Ideal para iniciantes. Custodial.</div>
+                <div style="font-size:8px;color:#F59E0B;margin-top:4px;font-weight:
 </div>
-
-<script>
-// ── GLOBALS ──
-var compras = JSON.parse(localStorage.getItem('clube-dca-compras') || '[]');
-var nome    = localStorage.getItem('clube-dca-nome') || 'Marcos';
-var btcUSD  = 0, ethUSD  = 0, solUSD  = 0;
-var usdBRL  = 0;
-var btcBRL  = 0, ethBRL  = 0, solBRL  = 0;
-var modalAtivo    = 'BTC';   // BTC | ETH | SOL
-var modalCurrency = 'BRL';   // BRL | USD
-var ATIVO_COLORS  = { BTC: '#F7931A', ETH: '#627EEA', SOL: '#9945FF' };
-var ATIVO_SYMBOLS = { BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT' };
-var chartEquity, chartPlat, chartMonthly, chartSatsMonthly, chartPrecoMedio;
-var PLAT_COLORS = ['#F7931A','#627EEA','#10B981','#EF4444','#60A5FA','#A78BFA','#F59E0B','#06B6D4','#EC4899'];
-var editIndex = null; // índice da compra sendo editada (null = nova)
-
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', function() {
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById('f-data').value = today;
-    document.getElementById('admin-nome').value = nome;
-    fetchPrices().then(function() {
-        updateKPIs();
-        renderComprasTable();
-        renderCharts();
-        renderAnalise();
-        renderVitrine();
-    });
-    setInterval(fetchPrices, 30000);
-    lucide && lucide.createIcons && lucide.createIcons();
-});
-
-// ── PRICES ──
-async function fetchPrices() {
-    try {
-        var r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
-        btcUSD = parseFloat((await r.json()).price) || 0;
-    } catch(e) {}
-    try {
-        var r2 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
-        ethUSD = parseFloat((await r2.json()).price) || 0;
-    } catch(e) {}
-    try {
-        var r3 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT');
-        solUSD = parseFloat((await r3.json()).price) || 0;
-    } catch(e) {}
-    try {
-        var r4 = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL');
-        var data = await r4.json();
-        usdBRL = parseFloat(data.USDBRL.bid) || 0;
-    } catch(e) {}
-    btcBRL = btcUSD * usdBRL;
-    ethBRL = ethUSD * usdBRL;
-    solBRL = solUSD * usdBRL;
-    document.getElementById('btc-price-topbar').innerHTML = btcBRL ? `BTC R$ ${formatMoney(btcBRL)}` : 'BTC ...';
-    document.getElementById('kpi-usd-brl').innerHTML = usdBRL ? `USD/BRL: ${formatMoney(usdBRL)}` : 'USD/BRL: ...';
-    document.getElementById('kpi-btc-usd').innerHTML = btcUSD ? `$ ${formatMoney(btcUSD)}` : '$ 0';
-    updateKPIs();
-}
-
-function formatMoney(val) {
-    return val.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-function formatSats(btc) {
-    return Math.round(btc * 1e8).toLocaleString('pt-BR') + ' sats';
-}
-
-// ── PAGES ──
-function showPage(pageId, el) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-'+pageId).classList.add('active');
-    document.querySelectorAll('.sidebar-nav-item').forEach(i => i.classList.remove('active'));
-    if (el) el.classList.add('active');
-    document.getElementById('topbar-title').innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1);
-    if (pageId === 'dashboard') renderCharts();
-    if (pageId === 'analise') renderAnalise();
-    if (pageId === 'vitrine') renderVitrine();
-}
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebar-overlay').classList.toggle('open');
-}
-function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebar-overlay').classList.remove('open');
-}
-
-// ── MODAL ──
-function openModal() {
-    document.getElementById('modal-compra').classList.add('open');
-    calcSatsPreview();
-}
-function closeModal() {
-    document.getElementById('modal-compra').classList.remove('open');
-    editIndex = null;
-    document.getElementById('modal-title').innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--btc)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Registrar Compra DCA
-    `;
-}
-function addCompra() {
-    editIndex = null;
-    document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
-    document.getElementById('f-brl').value = '';
-    document.getElementById('f-preco').value = '';
-    setAtivo('BTC');
-    setCurrency('BRL');
-    openModal();
-}
-function addCompraAtivo(ativo) {
-    addCompra();
-    setAtivo(ativo);
-}
-function setAtivo(ativo) {
-    modalAtivo = ativo;
-    document.querySelectorAll('[id^="btn-ativo-"]').forEach(btn => {
-        btn.style.border = '1px solid rgba(255,255,255,0.1)';
-        btn.style.background = 'none';
-        btn.style.color = 'rgba(255,255,255,0.4)';
-        btn.style.fontWeight = '700';
-    });
-    let btn = document.getElementById('btn-ativo-'+ativo);
-    btn.style.border = '2px solid var(--btc)';
-    btn.style.background = 'var(--btc-dim)';
-    btn.style.color = 'var(--btc)';
-    btn.style.fontWeight = '800';
-    document.getElementById('f-preco-label').innerText = 'Preço ' + ativo;
-    calcSatsPreview();
-}
-function setCurrency(cur) {
-    modalCurrency = cur;
-    document.getElementById('btn-cur-BRL').style.border = cur==='BRL' ? '1px solid var(--btc)' : '1px solid rgba(255,255,255,0.1)';
-    document.getElementById('btn-cur-BRL').style.background = cur==='BRL' ? 'var(--btc-dim)' : 'none';
-    document.getElementById('btn-cur-BRL').style.color = cur==='BRL' ? 'var(--btc)' : 'rgba(255,255,255,0.35)';
-    document.getElementById('btn-cur-USD').style.border = cur==='USD' ? '1px solid var(--btc)' : '1px solid rgba(255,255,255,0.1)';
-    document.getElementById('btn-cur-USD').style.background = cur==='USD' ? 'var(--btc-dim)' : 'none';
-    document.getElementById('btn-cur-USD').style.color = cur==='USD' ? 'var(--btc)' : 'rgba(255,255,255,0.35)';
-}
-function calcSatsPreview() {
-    let brl = parseFloat(document.getElementById('f-brl').value);
-    let preco = parseFloat(document.getElementById('f-preco').value);
-    if (brl > 0 && preco > 0) {
-        let qtd = brl / preco;
-        let preview = document.getElementById('sats-preview');
-        preview.style.display = 'block';
-        if (modalAtivo === 'BTC') {
-            preview.innerText = `≈ ${(qtd * 1e8).toLocaleString('pt-BR', {maximumFractionDigits:0})} sats`;
-        } else {
-            preview.innerText = `≈ ${qtd.toFixed(6)} ${modalAtivo}`;
-        }
-    } else {
-        document.getElementById('sats-preview').style.display = 'none';
-    }
-}
-function useLivePrice() {
-    let price = 0;
-    if (modalAtivo === 'BTC') price = btcBRL;
-    else if (modalAtivo === 'ETH') price = ethBRL;
-    else if (modalAtivo === 'SOL') price = solBRL;
-    if (modalCurrency === 'USD') {
-        price = (modalAtivo === 'BTC' ? btcUSD : modalAtivo === 'ETH' ? ethUSD : solUSD);
-    }
-    document.getElementById('f-preco').value = price ? price.toFixed(2) : '';
-    calcSatsPreview();
-}
-async function fetchHistoricalPrice() {
-    let data = document.getElementById('f-data').value;
-    if (!data) { alert('Selecione uma data'); return; }
-    let symbol = ATIVO_SYMBOLS[modalAtivo];
-    let timestamp = new Date(data + 'T12:00:00Z').getTime();
-    let url = `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&startTime=${timestamp}&limit=1`;
-    try {
-        let r = await fetch(url);
-        let json = await r.json();
-        if (json && json.length) {
-            let close = parseFloat(json[0][4]);
-            if (modalCurrency === 'BRL') close = close * usdBRL;
-            document.getElementById('f-preco').value = close.toFixed(2);
-            calcSatsPreview();
-        } else {
-            alert('Preço não encontrado para esta data');
-        }
-    } catch(e) { alert('Erro ao buscar preço'); }
-}
-
-// ── SALVAR / EDITAR ──
-function saveCompra() {
-    const data = document.getElementById('f-data').value;
-    const brl = parseFloat(document.getElementById('f-brl').value);
-    const preco = parseFloat(document.getElementById('f-preco').value);
-    const plataforma = document.getElementById('f-plat').value;
-    if (!data || isNaN(brl) || brl <= 0 || isNaN(preco) || preco <= 0) {
-        alert('Preencha todos os campos corretamente.');
-        return;
-    }
-    const quantidade = brl / preco; // em unidades do ativo
-    const novoRegistro = {
-        id: editIndex !== null ? compras[editIndex].id : Date.now(),
-        data,
-        ativo: modalAtivo,
-        plataforma,
-        brlInvestido: brl,
-        preco,
-        quantidade
-    };
-
-    if (editIndex !== null) {
-        // atualiza
-        compras[editIndex] = novoRegistro;
-    } else {
-        // novo
-        compras.push(novoRegistro);
-    }
-
-    localStorage.setItem('clube-dca-compras', JSON.stringify(compras));
-    closeModal();
-    renderComprasTable();
-    updateKPIs();
-    renderCharts();
-    renderAnalise();
-    renderVitrine();
-}
-
-function deleteCompra(index) {
-    if (confirm('Excluir esta compra?')) {
-        compras.splice(index, 1);
-        localStorage.setItem('clube-dca-compras', JSON.stringify(compras));
-        renderComprasTable();
-        updateKPIs();
-        renderCharts();
-        renderAnalise();
-        renderVitrine();
-    }
-}
-
-function editCompra(index) {
-    const c = compras[index];
-    if (!c) return;
-    editIndex = index;
-    modalAtivo = c.ativo || 'BTC';
-    setAtivo(modalAtivo);
-    document.getElementById('f-data').value = c.data;
-    document.getElementById('f-brl').value = c.brlInvestido;
-    document.getElementById('f-preco').value = c.preco;
-    document.getElementById('f-plat').value = c.plataforma || 'Outro';
-    setCurrency('BRL');
-    calcSatsPreview();
-    document.getElementById('modal-title').innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--btc)" stroke-width="2.5"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
-        Editar Compra
-    `;
-    openModal();
-}
-
-// ── RENDER TABELA ──
-function renderComprasTable() {
-    let tbody = document.getElementById('compras-tbody');
-    if (!compras.length) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h3>Nenhuma compra registrada</h3><p>Clique em "Nova Compra" para comecar seu DCA</p></div></td></tr>`;
-        return;
-    }
-    let html = '';
-    compras.sort((a,b) => a.data.localeCompare(b.data)).forEach((c, idx) => {
-        let data = new Date(c.data).toLocaleDateString('pt-BR');
-        let ativo = c.ativo || 'BTC';
-        let qtd = ativo === 'BTC' ? (c.quantidade * 1e8).toLocaleString('pt-BR') + ' sats' : c.quantidade.toFixed(6) + ' ' + ativo;
-        html += `<tr>
-            <td>${data}</td>
-            <td><span class="td-plat">${ativo}</span></td>
-            <td>${c.plataforma || 'Outro'}</td>
-            <td>R$ ${c.brlInvestido.toFixed(2)}</td>
-            <td>R$ ${c.preco.toFixed(2)}</td>
-            <td class="td-sats">${qtd}</td>
-            <td style="display:flex;gap:6px;justify-content:flex-end;">
-                <button class="td-delete" onclick="editCompra(${idx})" title="Editar">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
-                </button>
-                <button class="td-delete" onclick="deleteCompra(${idx})" title="Excluir">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                </button>
-            </td>
-        </tr>`;
-    });
-    tbody.innerHTML = html;
-}
-
-// ── KPI ── (simplificado, apenas alguns)
-function updateKPIs() {
-    let totalInvestido = compras.reduce((acc, c) => acc + c.brlInvestido, 0);
-    let btcAcumulado = compras.filter(c => c.ativo === 'BTC').reduce((acc, c) => acc + c.quantidade, 0);
-    let ethAcumulado = compras.filter(c => c.ativo === 'ETH').reduce((acc, c) => acc + c.quantidade, 0);
-    let solAcumulado = compras.filter(c => c.ativo === 'SOL').reduce((acc, c) => acc + c.quantidade, 0);
-    let valorAtualBRL = btcAcumulado * btcBRL + ethAcumulado * ethBRL + solAcumulado * solBRL;
-    let precoMedio = totalInvestido / (btcAcumulado || 1);
-    let lucro = valorAtualBRL - totalInvestido;
-    let perc = totalInvestido ? (lucro / totalInvestido * 100) : 0;
-
-    document.getElementById('kpi-total').innerText = `R$ ${formatMoney(totalInvestido)}`;
-    document.getElementById('kpi-compras-count').innerText = compras.length + ' compras';
-    document.getElementById('kpi-sats').innerText = formatSats(btcAcumulado);
-    document.getElementById('kpi-btc').innerText = btcAcumulado.toFixed(8) + ' BTC';
-    document.getElementById('kpi-valor-atual').innerText = `R$ ${formatMoney(valorAtualBRL)}`;
-    document.getElementById('kpi-valor-usd').innerText = `$ ${formatMoney(valorAtualBRL / usdBRL)}`;
-    document.getElementById('kpi-preco-medio').innerText = `R$ ${formatMoney(precoMedio)}`;
-    document.getElementById('kpi-preco-atual').innerText = `BTC agora: R$ ${formatMoney(btcBRL)}`;
-    document.getElementById('kpi-pnl-brl').innerText = `R$ ${formatMoney(lucro)}`;
-    let badge = document.getElementById('kpi-pnl-badge');
-    badge.innerText = `${perc >= 0 ? '+' : ''}${perc.toFixed(2)}%`;
-    badge.className = 'kpi-badge ' + (perc >= 0 ? 'up' : 'down');
-}
-
-// ── GRÁFICOS (placeholders) ──
-function renderCharts() { /* implementação completa omitida por brevidade, mas funcionará */ }
-function renderMonthlyChart() {}
-function renderTWRChart() {}
-function renderAnalise() {}
-function renderVitrine() {
-    let total = compras.reduce((acc, c) => acc + c.brlInvestido, 0);
-    let btc = compras.filter(c => c.ativo === 'BTC').reduce((acc, c) => acc + c.quantidade, 0);
-    let lucro = (btc * btcBRL) - total;
-    let perc = total ? (lucro / total * 100) : 0;
-    document.getElementById('vitrine-total').innerText = `R$ ${formatMoney(total)}`;
-    document.getElementById('vitrine-sats').innerText = formatSats(btc);
-    document.getElementById('vitrine-pnl').innerText = (perc >= 0 ? '+' : '') + perc.toFixed(2) + '%';
-    document.getElementById('vitrine-compras').innerText = compras.length;
-}
-function shareVitrine() { alert('Link copiado para a área de transferência (simulação)'); }
-function clearAllData() {
-    if (confirm('Tem certeza? Todos os dados serão apagados.')) {
-        compras = [];
-        localStorage.removeItem('clube-dca-compras');
-        renderComprasTable();
-        updateKPIs();
-        renderCharts();
-        renderAnalise();
-        renderVitrine();
-    }
-}
-function exportCSV() { /* ... */ }
-function exportJSON() { /* ... */ }
-function importJSON(e) { /* ... */ }
-function importCSV(e) { /* ... */ }
-function saveNome() {
-    nome = document.getElementById('admin-nome').value;
-    localStorage.setItem('clube-dca-nome', nome);
-    document.getElementById('vitrine-name').innerText = nome;
-    alert('Nome salvo!');
-}
-function onDateChange() {}
-</script>
-
-<script>
-// Função para copiar o código (para o botão externo, não interfere)
-function copiarCodigo() {
-    const codigo = document.querySelector('pre').innerText;
-    navigator.clipboard.writeText(codigo).then(() => alert('Código copiado!'));
-}
-</script>
-
+            </div>
+        </a>
+    </div>
+</div>
 </body>
 </html>
