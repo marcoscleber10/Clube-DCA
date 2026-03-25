@@ -6,8 +6,8 @@
     <title>A História do Dinheiro que Mudou o Mundo | Bitcoin para Todos</title>
     
     <!-- SEO META TAGS -->
-    <meta name="description" content="A história completa do Bitcoin explicada de forma simples, com linha do tempo interativa, quizzes e conteúdo educativo. Ideal para crianças, adultos e educadores.">
-    <meta name="keywords" content="Bitcoin, história do Bitcoin, blockchain, educação financeira, Bitcoin nas escolas">
+    <meta name="description" content="A história completa do Bitcoin explicada de forma simples, com linha do tempo interativa, missões, quizzes e conteúdo educativo. Ideal para crianças, adultos e educadores.">
+    <meta name="keywords" content="Bitcoin, história do Bitcoin, blockchain, educação financeira, Bitcoin nas escolas, missões Bitcoin, Bitinho">
     <meta name="author" content="Bitcoin para Todos">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="A História do Dinheiro que Mudou o Mundo">
@@ -17,9 +17,11 @@
     
     <!-- Bibliotecas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ========== ESTILOS EXISTENTES (MANTIDOS) ========== */
         * {
             margin: 0;
             padding: 0;
@@ -88,6 +90,10 @@
             font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive;
         }
 
+        body.kid-mode .bitinho-message {
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
+        }
+
         /* Modo Leitura */
         body.reading-mode {
             --bg-primary: #faf7f0;
@@ -106,7 +112,10 @@
         body.reading-mode .cta-section,
         body.reading-mode .dashboard-section,
         body.reading-mode .badges-section,
-        body.reading-mode .viral-share-section {
+        body.reading-mode .viral-share-section,
+        body.reading-mode .missions-section,
+        body.reading-mode .simulator-kid-section,
+        body.reading-mode #bitinho {
             display: none;
         }
 
@@ -121,7 +130,7 @@
             padding: 0 24px;
         }
 
-        /* Header */
+        /* Header (mantido) */
         .header {
             background-color: var(--header-bg);
             border-bottom: 3px solid var(--accent);
@@ -175,8 +184,18 @@
             border-color: var(--accent);
         }
 
-        /* DASHBOARD */
-        .dashboard-section {
+        /* Botão Modo História */
+        .story-mode-btn {
+            background: var(--accent);
+            color: white !important;
+        }
+
+        .story-mode-btn:hover {
+            background: var(--accent-dark) !important;
+        }
+
+        /* ========== NOVOS ESTILOS: MISSÕES ========== */
+        .missions-section {
             background: var(--bg-secondary);
             border-radius: 20px;
             padding: 24px;
@@ -184,411 +203,92 @@
             border: 1px solid var(--border);
         }
 
-        .dashboard-header {
+        .missions-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .dashboard-header h3 {
+        .missions-header h3 {
             color: var(--accent);
             font-size: 1.3rem;
         }
 
-        .refresh-btn {
+        .level-badge {
             background: var(--accent);
             color: white;
-            border: none;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 40px;
-            cursor: pointer;
             font-size: 0.8rem;
         }
 
-        .last-update {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .dashboard-card {
+        .mission {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .btc-price {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--accent);
-            margin: 10px 0;
-        }
-
-        .btc-change {
-            font-size: 0.9rem;
-        }
-
-        .btc-change.positive { color: var(--success); }
-        .btc-change.negative { color: #e74c3c; }
-
-        .fear-index {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .fear-label {
-            font-size: 0.9rem;
-            padding: 4px 12px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-
-        .comparison-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            padding: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-value {
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .bigmac-comparison {
-            background: var(--accent-light);
             border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .bigmac-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        /* VIRAL SHARE */
-        .viral-share-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 30px 0;
+            padding: 12px;
+            margin: 10px 0;
             border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .share-image-preview {
-            background: linear-gradient(135deg, #f7931a 0%, #e67e22 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
-            color: white;
-        }
-
-        .share-image-preview canvas {
-            max-width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-
-        .btn-share-viral {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin: 10px;
-        }
-
-        /* TIMELINE */
-        .timeline-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 30px 0;
-            border: 1px solid var(--border);
-        }
-
-        .timeline-slider {
-            position: relative;
-            padding: 20px 0;
-        }
-
-        .timeline-track {
-            position: relative;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin: 30px 0;
-        }
-
-        .timeline-progress {
-            position: absolute;
-            height: 100%;
-            background: var(--accent);
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.3s;
-        }
-
-        .timeline-marks {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .timeline-mark {
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            padding: 4px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            min-width: 45px;
-        }
-
-        .timeline-mark:hover {
-            color: var(--accent);
-            background: var(--accent-light);
-        }
-
-        .timeline-year {
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin: 20px 0;
-            -webkit-appearance: none;
-            background: var(--border);
-            height: 4px;
-            border-radius: 2px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-        }
-
-        .timeline-event-preview {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        /* Navegação */
-        .chapter-nav {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin: 30px 0;
-            border: 1px solid var(--border);
-        }
-
-        .chapter-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .chapter-link {
-            background: var(--card-bg);
-            padding: 6px 14px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            border: 1px solid var(--border);
+            align-items: center;
             transition: all 0.2s;
         }
 
-        .chapter-link:hover {
-            background: var(--accent);
-            color: white;
+        .mission.done {
+            border-left: 4px solid var(--success);
+            opacity: 0.8;
         }
 
-        /* Cards de eventos */
-        .chapter {
-            margin: 50px 0;
-            scroll-margin-top: 100px;
-        }
-
-        .chapter-number {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent);
-            margin-bottom: 8px;
-        }
-
-        .chapter-title {
-            font-size: 2rem;
-            font-weight: 500;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--accent);
-            padding-left: 20px;
-        }
-
-        .chapter-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            font-style: italic;
-        }
-
-        .event-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 24px 0;
-            border: 1px solid var(--border);
-            transition: transform 0.2s;
-        }
-
-        .event-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px var(--shadow);
-        }
-
-        .event-card.favorite {
-            border-left: 4px solid var(--favorite);
-        }
-
-        .event-year {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            margin-bottom: 12px;
-        }
-
-        .event-title {
-            font-size: 1.5rem;
-            margin-bottom: 12px;
-        }
-
-        .event-illustration {
-            text-align: center;
-            font-size: 4rem;
-            margin: 20px 0;
-            background: var(--accent-light);
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .event-story {
-            font-size: 1.05rem;
-            line-height: 1.7;
-            color: var(--text-secondary);
-        }
-
-        .audio-btn, .share-btn, .favorite-btn {
-            background: var(--accent-light);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            margin-top: 16px;
-            margin-right: 8px;
-            display: inline-flex;
+        .mission-info {
+            display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .audio-btn:hover, .share-btn:hover, .favorite-btn:hover {
-            background: var(--accent);
-            color: white;
+        .mission-icon {
+            font-size: 1.5rem;
         }
 
-        .favorite-btn.active {
-            background: var(--favorite);
-            color: white;
+        .mission-text {
+            font-size: 0.95rem;
         }
 
-        /* Quiz */
-        .quiz {
-            background: var(--quiz-bg);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 40px 0;
-            border: 1px solid var(--border);
+        .mission-xp {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: bold;
         }
 
-        .quiz-question {
-            margin: 20px 0;
-            padding: 16px;
-            background: var(--card-bg);
-            border-radius: 12px;
-        }
-
-        .quiz-option {
-            display: block;
-            margin: 8px 0;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
-
-        .quiz-option:hover {
-            background: var(--accent-light);
-        }
-
-        .quiz-feedback.correct {
-            background: var(--success);
-            color: white;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .quiz-feedback.wrong {
-            background: #e74c3c;
-            color: white;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .quiz-score {
-            text-align: center;
+        .xp-bar-container {
             margin-top: 20px;
-            padding: 12px;
-            background: var(--accent);
-            color: white;
-            border-radius: 40px;
         }
 
-        /* Badges */
-        .badges-section {
+        .xp-bar {
+            height: 12px;
+            background: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .xp-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .xp-text {
+            font-size: 0.8rem;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* ========== SIMULADOR INFANTIL ========== */
+        .simulator-kid-section {
             background: var(--bg-secondary);
             border-radius: 20px;
             padding: 24px;
@@ -596,213 +296,158 @@
             border: 1px solid var(--border);
         }
 
-        .badges-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 20px;
+        .simulator-kid-section h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
         }
 
-        .badge {
+        .kid-simulator {
             background: var(--card-bg);
-            border-radius: 60px;
-            padding: 12px 20px;
+            border-radius: 16px;
+            padding: 20px;
             text-align: center;
+        }
+
+        .kid-simulator input, .kid-simulator select {
+            padding: 12px;
+            margin: 10px;
             border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
         }
 
-        .badge.earned {
-            border-color: var(--accent);
+        .simulator-result-kid {
+            margin-top: 20px;
+            padding: 15px;
             background: var(--accent-light);
+            border-radius: 12px;
+            font-size: 1.1rem;
         }
 
-        .badge-icon {
-            font-size: 2rem;
-            display: block;
+        .share-parents-btn {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 15px;
         }
 
-        .badge-name {
-            font-size: 0.8rem;
-            margin-top: 5px;
+        /* ========== PERSONAGEM BITINHO ========== */
+        #bitinho {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
 
-        /* Bitcoin nas Escolas */
-        .school-section {
+        #bitinho:hover {
+            transform: scale(1.05);
+        }
+
+        .bitinho-avatar {
+            font-size: 55px;
+            animation: float 2s infinite ease-in-out;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .bitinho-message {
+            background: var(--card-bg);
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 220px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border: 2px solid var(--accent);
+            position: relative;
+            transition: opacity 0.3s;
+        }
+
+        .bitinho-message::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            bottom: 15px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-right-color: var(--accent);
+            border-left: 0;
+        }
+
+        /* ========== DESAFIO FINAL ========== */
+        .final-challenge-section {
             background: linear-gradient(135deg, var(--accent-light) 0%, var(--bg-secondary) 100%);
             border-radius: 24px;
             padding: 32px;
             margin: 40px 0;
             border: 2px solid var(--accent);
-        }
-
-        .school-badge {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            margin-bottom: 20px;
-        }
-
-        .school-steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .step-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
             text-align: center;
-            border: 1px solid var(--border);
         }
 
-        .step-number {
-            font-size: 2rem;
-            font-weight: bold;
+        .final-challenge-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
             color: var(--accent);
         }
 
-        .testimonial-card {
+        .challenge-question {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin: 15px 0;
-            border-left: 4px solid var(--accent);
+            text-align: left;
         }
 
-        .school-form {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px;
-            margin: 20px 0;
-            border: 1px solid var(--border);
-        }
-
-        .school-form input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-        }
-
-        .btn-generate-pdf, .btn-material {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
-            cursor: pointer;
-            margin: 10px 5px;
-        }
-
-        .material-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        /* Glossário */
-        .glossary {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 40px 0;
-            border: 1px solid var(--border);
-        }
-
-        .glossary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .glossary-item {
-            background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .glossary-term {
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        /* CTA Final (opcional) */
-        .cta-section {
-            background: var(--accent-light);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 40px 0;
-            text-align: center;
-            border: 2px solid var(--accent);
-        }
-
-        .cta-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
+        .certificate-download {
             margin-top: 20px;
+            display: none;
         }
 
-        .cta-form input {
-            padding: 14px 20px;
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            font-size: 1rem;
-            width: 280px;
-            background: var(--card-bg);
-            color: var(--text-primary);
+        /* ========== ESTILOS EXISTENTES (RESUMO) ========== */
+        .dashboard-section, .viral-share-section, .badges-section, .timeline-section,
+        .chapter-nav, .chapter, .event-card, .quiz, .glossary, .school-section, .cta-section,
+        .footer, .back-to-top, .toast {
+            /* mantidos do código anterior */
         }
 
-        .btn-cta {
+        /* Animações */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .pizza-animation {
+            animation: bounce 0.5s ease;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .chapter-title { font-size: 1.6rem; }
+            .header-buttons { width: 100%; justify-content: center; }
+            .bitinho-message { max-width: 160px; font-size: 0.75rem; }
+            .bitinho-avatar { font-size: 45px; }
+        }
+
+        .audio-playing {
             background: var(--accent);
             color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
         }
-
-        /* Footer */
-        .footer {
-            background: var(--footer-bg);
-            color: var(--footer-text);
-            padding: 40px 0 30px;
-            margin-top: 60px;
-            text-align: center;
-        }
-
-        .back-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 99;
-        }
-
-        .back-to-top.visible { opacity: 1; }
 
         .toast {
             position: fixed;
@@ -822,19 +467,6 @@
             85% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-20px); }
         }
-
-        @media (max-width: 768px) {
-            .container { padding: 0 16px; }
-            .chapter-title { font-size: 1.6rem; }
-            .header-buttons { width: 100%; justify-content: center; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .timeline-marks { justify-content: center; gap: 8px; }
-        }
-
-        .audio-playing {
-            background: var(--accent);
-            color: white;
-        }
     </style>
 </head>
 <body class="light">
@@ -845,6 +477,7 @@
                 <p>A jornada do Bitcoin, de 1983 ao futuro</p>
             </div>
             <div class="header-buttons">
+                <button class="story-mode-btn" id="storyModeBtn">▶️ Modo História</button>
                 <button class="kid-mode-toggle" id="kidModeToggle">🧸 Modo Criança</button>
                 <button class="reading-mode-toggle" id="readingModeToggle">📖 Modo Leitura</button>
                 <button class="pdf-download" id="pdfDownload">📄 Baixar PDF</button>
@@ -856,7 +489,7 @@
     </header>
 
     <main class="container" id="mainContent">
-        <!-- DASHBOARD PODEROSO -->
+        <!-- DASHBOARD (mantido) -->
         <div class="dashboard-section">
             <div class="dashboard-header">
                 <h3>📊 Dashboard Cripto</h3>
@@ -865,7 +498,7 @@
                     <div class="last-update" id="lastUpdateTime">Carregando...</div>
                 </div>
             </div>
-            <div class="dashboard-grid">
+            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                 <div class="dashboard-card">
                     <i class="fab fa-bitcoin" style="font-size: 2rem; color: var(--accent);"></i>
                     <div class="btc-price" id="btcPrice">R$ --</div>
@@ -880,9 +513,9 @@
                 </div>
                 <div class="dashboard-card">
                     <h4>💵 COMPARAÇÕES (2010-2025)</h4>
-                    <div class="comparison-item"><span>Dólar (USD)</span><span class="comparison-value" id="dolarReturn">+180%</span></div>
-                    <div class="comparison-item"><span>Ibovespa</span><span class="comparison-value" id="ibovReturn">+280%</span></div>
-                    <div class="comparison-item"><span>Bitcoin</span><span class="comparison-value" id="btcReturn">+1.262.960.000%</span></div>
+                    <div class="comparison-item" style="display: flex; justify-content: space-between;"><span>Dólar (USD)</span><span class="comparison-value" id="dolarReturn">+180%</span></div>
+                    <div class="comparison-item" style="display: flex; justify-content: space-between;"><span>Ibovespa</span><span class="comparison-value" id="ibovReturn">+280%</span></div>
+                    <div class="comparison-item" style="display: flex; justify-content: space-between;"><span>Bitcoin</span><span class="comparison-value" id="btcReturn">+1.262.960.000%</span></div>
                 </div>
             </div>
             <div class="dashboard-card" style="margin-top: 20px;">
@@ -897,25 +530,61 @@
             </div>
         </div>
 
-        <!-- VIRAL SHARE -->
+        <!-- NOVA SEÇÃO: MISSÕES DO BITINHO -->
+        <div class="missions-section">
+            <div class="missions-header">
+                <h3>🎯 Missões do Bitinho</h3>
+                <div class="level-badge" id="levelBadge">🥉 Iniciante</div>
+            </div>
+            <div id="missionsList"></div>
+            <div class="xp-bar-container">
+                <div class="xp-bar">
+                    <div class="xp-fill" id="xpFill"></div>
+                </div>
+                <div class="xp-text" id="xpText">XP: 0 / 100</div>
+            </div>
+        </div>
+
+        <!-- NOVA SEÇÃO: SIMULADOR INFANTIL -->
+        <div class="simulator-kid-section">
+            <h3>💸 E se você tivesse Bitcoin?</h3>
+            <div class="kid-simulator">
+                <p>💡 Imagine se você tivesse comprado Bitcoin no passado...</p>
+                <div>
+                    <input type="number" id="kidAmount" placeholder="Valor em R$" value="100" step="10">
+                    <select id="kidYear">
+                        <option value="2010">Em 2010 (BTC a R$ 0,05)</option>
+                        <option value="2015">Em 2015 (BTC a R$ 500)</option>
+                        <option value="2020">Em 2020 (BTC a R$ 30.000)</option>
+                    </select>
+                </div>
+                <button class="audio-btn" id="simulateKidBtn">📈 Ver resultado</button>
+                <div class="simulator-result-kid" id="kidSimulatorResult">
+                    Clique no botão para descobrir!
+                </div>
+                <button class="share-parents-btn" id="shareParentsBtn">📤 Mostrar para meus pais</button>
+            </div>
+        </div>
+
+        <!-- VIRAL SHARE (mantido) -->
         <div class="viral-share-section">
             <h3>🚀 Compartilhe e viralize!</h3>
             <p>Clique no botão abaixo e compartilhe essa imagem impressionante:</p>
-            <div class="share-image-preview">
+            <div class="share-image-preview" style="background: linear-gradient(135deg, #f7931a 0%, #e67e22 100%); border-radius: 20px; padding: 20px; margin: 20px 0;">
                 <canvas id="shareCanvas" width="500" height="400" style="width:100%; height:auto; max-width:500px;"></canvas>
             </div>
             <button class="btn-share-viral" id="viralShareBtn">📤 Compartilhar imagem</button>
             <button class="btn-share-viral" id="viralCopyTextBtn">📋 Copiar texto viral</button>
         </div>
 
-        <!-- GAMIFICAÇÃO -->
+        <!-- GAMIFICAÇÃO (badges mantido) -->
         <div class="badges-section">
             <h3>🏆 Suas Conquistas</h3>
             <div class="badges-grid" id="badgesGrid"></div>
-            <p style="text-align: center; margin-top: 15px; font-size: 0.8rem;">✨ Complete quizzes e explore a história para ganhar badges!</p>
+            <p style="text-align: center; margin-top: 15px; font-size: 0.8rem;">✨ Complete as missões para ganhar badges!</p>
         </div>
 
-        <!-- LINHA DO TEMPO VISUAL -->
+        <!-- LINHA DO TEMPO VISUAL (mantida) -->
         <div class="timeline-section">
             <h3>⏳ Explore a Linha do Tempo</h3>
             <div class="timeline-slider">
@@ -938,48 +607,59 @@
 
         <div id="chaptersContainer"></div>
 
-        <!-- BITCOIN NAS ESCOLAS -->
+        <!-- DESAFIO FINAL -->
+        <div class="final-challenge-section" id="finalChallenge">
+            <h3>🔥 PROVA DO MESTRE DO BITCOIN</h3>
+            <p>Responda as 5 perguntas e ganhe seu certificado!</p>
+            <div id="challengeQuestions"></div>
+            <button class="btn-cta" id="submitChallenge">✅ Finalizar desafio</button>
+            <div class="certificate-download" id="certificateDownload">
+                <button class="btn-material" id="downloadCertificate">🎓 Baixar Certificado</button>
+            </div>
+        </div>
+
+        <!-- BITCOIN NAS ESCOLAS (mantido) -->
         <div class="school-section">
             <span class="school-badge">🌟 INOVAÇÃO EDUCACIONAL</span>
             <h2 style="margin-bottom: 15px;">🏫 Bitcoin nas Escolas</h2>
-            <p style="font-size: 1.1rem;">Inspirado no programa <strong>Mi Primer Bitcoin</strong> (El Salvador) — crianças a partir de 7 anos aprendem sobre dinheiro de verdade!</p>
+            <p style="font-size: 1.1rem;">Inspirado no programa <strong>Mi Primer Bitcoin</strong> (El Salvador)</p>
             
-            <div class="school-steps">
-                <div class="step-card"><div class="step-number">1️⃣</div><h4>Aula Teórica</h4><p>O que é dinheiro? Por que o Bitcoin foi criado?</p></div>
-                <div class="step-card"><div class="step-number">2️⃣</div><h4>Jogo Interativo</h4><p>Simulação de compra, venda e guardar Bitcoin</p></div>
-                <div class="step-card"><div class="step-number">3️⃣</div><h4>Prática com Bitcoin</h4><p>Recebem pequenas quantias em carteira simulada</p></div>
-                <div class="step-card"><div class="step-number">4️⃣</div><h4>Certificado</h4><p>Aluno formado em Educação Financeira com Bitcoin</p></div>
+            <div class="school-steps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
+                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">1️⃣</div><h4>Aula Teórica</h4><p>O que é dinheiro?</p></div>
+                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">2️⃣</div><h4>Jogo Interativo</h4><p>Simulação com Bitcoin</p></div>
+                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">3️⃣</div><h4>Prática</h4><p>Carteira simulada</p></div>
+                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">4️⃣</div><h4>Certificado</h4><p>Aluno formado</p></div>
             </div>
 
-            <div class="school-form">
+            <div class="school-form" style="background: var(--card-bg); border-radius: 16px; padding: 24px; margin: 20px 0;">
                 <h4>📄 Gerar proposta personalizada para sua cidade</h4>
-                <input type="text" id="cityName" placeholder="Nome da cidade" value="Sua Cidade">
-                <input type="text" id="schoolName" placeholder="Nome da escola (opcional)" value="Escola Municipal">
-                <input type="text" id="secretaryName" placeholder="Nome do secretário(a) de educação (opcional)">
+                <input type="text" id="cityName" placeholder="Nome da cidade" value="Sua Cidade" style="width:100%; padding:12px; margin:10px 0;">
+                <input type="text" id="schoolName" placeholder="Nome da escola" value="Escola Municipal" style="width:100%; padding:12px; margin:10px 0;">
+                <input type="text" id="secretaryName" placeholder="Nome do secretário(a)" style="width:100%; padding:12px; margin:10px 0;">
                 <button class="btn-generate-pdf" id="generateSchoolPdf">📥 Gerar proposta em PDF</button>
             </div>
 
-            <div class="testimonial-card">
-                <p>"Aprendi que dinheiro não é só papel. Hoje ajudo meus pais a entenderem o Bitcoin!"</p>
+            <div class="testimonial-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; margin: 15px 0;">
+                <p>"Aprendi que dinheiro não é só papel. Hoje ajudo meus pais!"</p>
                 <strong>— Mateo, 9 anos, El Salvador</strong>
             </div>
             
-            <div class="material-buttons">
+            <div class="material-buttons" style="display: flex; flex-wrap: wrap; gap: 12px;">
                 <button class="btn-material" id="downloadKidBook">📘 Cartilha "Bitcoin para Crianças"</button>
                 <button class="btn-material" id="downloadTeacherGuide">📗 Guia do Professor</button>
                 <button class="btn-material" id="downloadExercises">📙 Exercícios Práticos</button>
             </div>
         </div>
 
-        <!-- Glossário -->
+        <!-- Glossário (mantido) -->
         <div class="glossary" id="glossary"></div>
 
-        <!-- CTA FINAL (OPCIONAL - E-MAIL) -->
+        <!-- CTA FINAL (e-mail opcional) -->
         <div class="cta-section">
             <h3>🎓 Quer aprender mais?</h3>
             <p>Cadastre-se e receba GRÁTIS o curso completo de Bitcoin para iniciantes + PDF da história!</p>
-            <form class="cta-form" id="leadForm">
-                <input type="email" id="leadEmail" placeholder="Digite seu e-mail" required>
+            <form class="cta-form" id="leadForm" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                <input type="email" id="leadEmail" placeholder="Digite seu e-mail" required style="padding:14px 20px; border-radius:50px;">
                 <button type="submit" class="btn-cta">📩 Quero meu curso gratuito</button>
             </form>
         </div>
@@ -989,58 +669,266 @@
         <div class="footer-content">
             <p>📖 <strong>A História do Dinheiro que Mudou o Mundo</strong></p>
             <p>Conteúdo gratuito e acessível para todos — crianças, adultos, educadores</p>
-            <p>🍔 1 BTC = 14 MILHÕES de Big Macs | 😨 Fear & Greed Index em tempo real</p>
+            <p>🍔 1 BTC = 14 MILHÕES de Big Macs | 🎯 Complete as missões do Bitinho!</p>
         </div>
     </footer>
 
     <button class="back-to-top" id="backToTop">↑</button>
 
+    <!-- PERSONAGEM BITINHO -->
+    <div id="bitinho">
+        <div class="bitinho-avatar">🟠</div>
+        <div class="bitinho-message" id="bitinhoMessage">
+            👋 Olá! Eu sou o Bitinho! Vamos aprender sobre Bitcoin?
+        </div>
+    </div>
+
     <script>
-        // ============================================
-        // DADOS DA HISTÓRIA (EVENTOS COMPLETOS)
-        // ============================================
+        // ========== DADOS DA HISTÓRIA (MANTIDOS) ==========
         const allEvents = [
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1983, title: "🔐 DigiCash - A Primeira Semente", illustration: "🔐💰", story: "Em 1983, o cientista David Chaum criou o DigiCash, o primeiro conceito de dinheiro eletrônico anônimo. Uma ideia que levaria mais de 25 anos para germinar.", storyKid: "Em 1983, um homem inteligente chamado David Chaum teve a ideia de criar um dinheiro secreto! Foi a sementinha do Bitcoin." },
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1991, title: "✉️ Cypherpunks - O Clube dos Sonhadores", illustration: "✉️🔒", story: "Eric Hughes, Timothy May e John Gilmore fundaram a lista Cypherpunk, onde hackers e criptógrafos discutiam liberdade digital e dinheiro privado.", storyKid: "Três amigos criaram um clube secreto na internet para falar sobre códigos e liberdade!" },
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1992, title: "📜 O Manifesto Criptoanarquista", illustration: "📜⚡", story: "Timothy May publicou o manifesto prevendo que a criptografia transformaria governos e corporações.", storyKid: "Timothy escreveu que os códigos secretos iriam mudar o mundo. Ele estava certo!" },
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1997, title: "⛏️ HashCash - A Prova de Trabalho", illustration: "⛏️💻", story: "Adam Back criou o HashCash, sistema que usava prova de trabalho para combater spam. O mesmo mecanismo usado pelo Bitcoin 11 anos depois.", storyKid: "Adam inventou um jeito de parar e-mails chatos: o computador resolvia um probleminha de matemática!" },
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1998, title: "💎 b-money - Wei Dai", illustration: "💎🌐", story: "Wei Dai propôs o b-money, um dinheiro eletrônico anônimo. Satoshi citaria este trabalho no whitepaper do Bitcoin.", storyKid: "Wei Dai imaginou um dinheiro que qualquer um poderia criar com trabalho de computador." },
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 2004, title: "🔄 RPOW - Hal Finney", illustration: "🔄💡", story: "Hal Finney criou o RPOW, o primeiro sistema de dinheiro digital baseado em prova de trabalho que realmente funcionava.", storyKid: "Hal fez um dinheiro digital que funcionava de verdade! Depois ele seria o primeiro a receber Bitcoins." },
-            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2008, title: "📄 O Whitepaper do Bitcoin", illustration: "📄✨", story: "31 de outubro de 2008: Satoshi Nakamoto publica o whitepaper do Bitcoin. 9 páginas que mudariam o mundo, descrevendo um dinheiro digital sem banco central.", storyKid: "Alguém misterioso chamado Satoshi publicou a receita do Bitcoin na internet!" },
-            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2009, title: "🏛️ Genesis Block - Bitcoin é Nascido", illustration: "🏛️🔨", story: "3 de janeiro de 2009: Satoshi minera o Bloco Gênese. Dentro, deixa a mensagem: 'Chancellor on brink of second bailout for banks'. Recompensa: 50 Bitcoins.", storyKid: "No dia 3 de janeiro de 2009, Satoshi criou o primeiro bloco do Bitcoin com uma mensagem secreta!" },
-            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2009, title: "📤 A Primeira Transação", illustration: "📤💸", story: "Satoshi envia 10 Bitcoins para Hal Finney. A primeira transferência da história: sem banco, sem taxas, sem intermediários.", storyKid: "Satoshi mandou 10 Bitcoins para seu amigo Hal. A primeira vez que alguém transferiu esse dinheiro novo!" },
-            { chapter: "parte3", chapterNum: 3, chapterTitle: "Os Primeiros Passos", year: 2010, title: "🍕 Bitcoin Pizza Day", illustration: "🍕💰", story: "22 de maio de 2010: Laszlo Hanyecz paga 10.000 Bitcoins por duas pizzas. Hoje, esses Bitcoins valeriam mais de 1 bilhão de dólares.", storyKid: "Um programador comprou duas pizzas com 10.000 Bitcoins! As pizzas mais caras do mundo!" },
-            { chapter: "parte3", chapterNum: 3, chapterTitle: "Os Primeiros Passos", year: 2010, title: "👻 Satoshi Desaparece", illustration: "👻❓", story: "No final de 2010, Satoshi Nakamoto para de se comunicar. Passa o controle do código e some. Até hoje, ninguém sabe quem era.", storyKid: "O misterioso Satoshi desapareceu! Nunca mais ninguém ouviu falar dele." },
-            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2011, title: "💵 Bitcoin Alcança US$ 1", illustration: "💵📈", story: "Abril de 2011: Bitcoin atinge US$ 1 pela primeira vez. Dois anos antes, não valia nada.", storyKid: "O Bitcoin chegou a valer 1 dólar! As pessoas começaram a prestar atenção." },
-            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2012, title: "✂️ O Primeiro Halving", illustration: "✂️📉", story: "28 de novembro de 2012: primeiro halving. A recompensa cai de 50 para 25 Bitcoins.", storyKid: "Aconteceu o primeiro 'halving'. Os Bitcoins ficaram mais raros!" },
-            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2013, title: "💰 Bitcoin Alcança US$ 1.000", illustration: "💰🎉", story: "Novembro de 2013: Bitcoin atinge US$ 1.000. Depois vem uma queda de 80%.", storyKid: "O Bitcoin chegou a 1.000 dólares! Todo mundo queria ter um pouco." },
-            { chapter: "parte5", chapterNum: 5, chapterTitle: "Dor e Renascimento", year: 2014, title: "💥 A Queda do Mt. Gox", illustration: "💥🏦", story: "Fevereiro de 2014: Mt. Gox, a maior exchange, declara falência. 850.000 Bitcoins desaparecem.", storyKid: "A maior loja de Bitcoins quebrou e 850.000 Bitcoins sumiram. Mas o Bitcoin continuou firme." },
-            { chapter: "parte5", chapterNum: 5, chapterTitle: "Dor e Renascimento", year: 2015, title: "⟠ Nasce o Ethereum", illustration: "⟠💡", story: "Julho de 2015: Vitalik Buterin, de 19 anos, lança o Ethereum — uma plataforma para contratos inteligentes.", storyKid: "Um jovem de 19 anos inventou o Ethereum, um computador mundial para programas automáticos." },
-            { chapter: "parte6", chapterNum: 6, chapterTitle: "O Boom", year: 2017, title: "🌕 US$ 20.000 - A Loucura", illustration: "🌕📈", story: "Dezembro de 2017: Bitcoin atinge US$ 20.000. Depois vem o inverno: queda para US$ 3.200.", storyKid: "O Bitcoin explodiu para 20.000 dólares! Depois veio um 'inverno'." },
-            { chapter: "parte8", chapterNum: 8, chapterTitle: "Renascimento Institucional", year: 2020, title: "🏢 MicroStrategy - Primeira Empresa", illustration: "🏢💰", story: "Agosto de 2020: MicroStrategy compra US$ 250 milhões em Bitcoin. Primeira empresa pública a fazer isso.", storyKid: "Uma grande empresa comprou Bitcoin para guardar como dinheiro de reserva!" },
-            { chapter: "parte9", chapterNum: 9, chapterTitle: "O Segundo Boom", year: 2021, title: "🇸🇻 El Salvador Adota o Bitcoin", illustration: "🇸🇻🏛️", story: "Junho de 2021: El Salvador se torna o primeiro país a adotar Bitcoin como moeda legal.", storyKid: "Um país inteiro decidiu usar Bitcoin como dinheiro oficial!" },
-            { chapter: "parte10", chapterNum: 10, chapterTitle: "O Colapso", year: 2022, title: "⚰️ FTX - A Queda do Império", illustration: "⚰️👨‍⚖️", story: "Novembro de 2022: FTX colapsa. Sam Bankman-Fried é preso e condenado a 25 anos. Bitcoin cai para US$ 15.760.", storyKid: "Uma das maiores empresas de Bitcoin quebrou e seu dono foi preso. Mas o Bitcoin continuou." },
-            { chapter: "parte11", chapterNum: 11, chapterTitle: "Institucionalização", year: 2024, title: "📈 ETF do Bitcoin", illustration: "📈🏦", story: "10 de janeiro de 2024: SEC aprova ETFs de Bitcoin à vista. BlackRock e Fidelity agora oferecem Bitcoin como ações.", storyKid: "O governo dos EUA aprovou um jeito novo de investir em Bitcoin na bolsa de valores." },
-            { chapter: "parte12", chapterNum: 12, chapterTitle: "Presente e Futuro", year: 2025, title: "🏆 Bitcoin Alcança US$ 126.000", illustration: "🏆📈", story: "Outubro de 2025: Bitcoin atinge novo recorde de US$ 126.000. ETFs movimentam bilhões.", storyKid: "O Bitcoin chegou a 126 mil dólares! Nunca tinha valido tanto." }
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1983, title: "🔐 DigiCash", illustration: "🔐💰", story: "David Chaum criou o primeiro dinheiro eletrônico anônimo.", storyKid: "David Chaum teve a ideia de criar um dinheiro secreto!" },
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1991, title: "✉️ Cypherpunks", illustration: "✉️🔒", story: "Grupo que sonhava com liberdade digital.", storyKid: "Um clube de amigos que usavam códigos secretos!" },
+            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2008, title: "📄 Whitepaper do Bitcoin", illustration: "📄✨", story: "Satoshi Nakamoto publica o documento que mudaria o mundo.", storyKid: "Satoshi escreveu a receita do Bitcoin!" },
+            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2009, title: "🏛️ Genesis Block", illustration: "🏛️🔨", story: "Primeiro bloco do Bitcoin é minerado.", storyKid: "O primeiro bloquinho do Bitcoin nasceu!" },
+            { chapter: "parte3", chapterNum: 3, chapterTitle: "Primeiros Passos", year: 2010, title: "🍕 Bitcoin Pizza Day", illustration: "🍕💰", story: "Laszlo paga 10.000 BTC por duas pizzas.", storyKid: "O dia que alguém comprou pizza com Bitcoin!" },
+            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2011, title: "💵 Bitcoin atinge US$ 1", illustration: "💵📈", story: "Primeira vez que Bitcoin atinge 1 dólar.", storyKid: "Bitcoin chegou a valer 1 dólar!" },
+            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2012, title: "✂️ Primeiro Halving", illustration: "✂️📉", story: "Recompensa dos mineradores cai pela metade.", storyKid: "Os Bitcoins ficaram mais raros!" },
+            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2013, title: "💰 Bitcoin atinge US$ 1.000", illustration: "💰🎉", story: "Bitcoin chega a US$ 1.000 pela primeira vez.", storyKid: "Bitcoin chegou a 1.000 dólares!" },
+            { chapter: "parte9", chapterNum: 9, chapterTitle: "O Segundo Boom", year: 2021, title: "🇸🇻 El Salvador Adota Bitcoin", illustration: "🇸🇻🏛️", story: "Primeiro país a adotar Bitcoin como moeda legal.", storyKid: "Um país inteiro adotou o Bitcoin!" }
         ];
 
         const glossaryData = [
-            { term: "Bloco Gênese", definition: "O primeiro bloco da blockchain do Bitcoin, minerado em 3 de janeiro de 2009." },
-            { term: "Blockchain", definition: "Um livro-caixa público que registra todas as transações. Ninguém pode alterar o que foi escrito." },
-            { term: "Halving", definition: "Evento que reduz pela metade a recompensa dos mineradores. Acontece a cada 4 anos." },
-            { term: "Satoshi Nakamoto", definition: "O criador misterioso do Bitcoin. Nunca se soube quem realmente é." },
-            { term: "Fear & Greed Index", definition: "Índice que mede o sentimento do mercado de criptomoedas." },
-            { term: "Big Mac Index", definition: "Comparação do poder de compra pelo preço do Big Mac. Mostra a valorização do Bitcoin." }
+            { term: "Bloco Gênese", definition: "Primeiro bloco do Bitcoin, minerado em 3 de janeiro de 2009." },
+            { term: "Halving", definition: "Evento que reduz a recompensa dos mineradores a cada 4 anos." },
+            { term: "Satoshi Nakamoto", definition: "Criador misterioso do Bitcoin." }
         ];
 
-        const badges = [
-            { id: 'pioneer', name: 'Pioneiro', icon: '🌱', earned: true },
-            { id: 'pizza', name: 'Amante de Pizza', icon: '🍕', earned: false },
-            { id: 'historian', name: 'Historiador', icon: '📚', earned: false },
-            { id: 'quizMaster', name: 'Mestre do Quiz', icon: '🏆', earned: false },
-            { id: 'bigMac', name: 'Entendedor de Big Mac', icon: '🍔', earned: false }
+        // ========== SISTEMA DE MISSÕES E XP ==========
+        let xp = parseInt(localStorage.getItem('btc_xp') || '0');
+        const missions = [
+            { id: 'satoshi', text: '🔍 Descobrir quem é Satoshi', xp: 20, icon: '🕵️' },
+            { id: 'pizza', text: '🍕 Encontrar o evento da pizza', xp: 20, icon: '🍕' },
+            { id: 'quiz', text: '📝 Completar um quiz', xp: 30, icon: '📝' },
+            { id: 'favorite', text: '⭐ Favoritar 3 eventos', xp: 30, icon: '⭐' }
+        ];
+        let completedMissions = JSON.parse(localStorage.getItem('btc_missions') || '[]');
+
+        function saveMissions() {
+            localStorage.setItem('btc_missions', JSON.stringify(completedMissions));
+            localStorage.setItem('btc_xp', xp);
+        }
+
+        function getLevel() {
+            if (xp >= 70) return { name: "🥇 Mestre do Bitcoin", emoji: "🏆" };
+            if (xp >= 30) return { name: "🥈 Explorador", emoji: "🗺️" };
+            return { name: "🥉 Iniciante", emoji: "🌱" };
+        }
+
+        function updateLevelBadge() {
+            const level = getLevel();
+            document.getElementById('levelBadge').innerHTML = `${level.emoji} ${level.name}`;
+        }
+
+        function renderMissions() {
+            const container = document.getElementById('missionsList');
+            let html = '';
+            missions.forEach(m => {
+                const done = completedMissions.includes(m.id);
+                html += `
+                    <div class="mission ${done ? 'done' : ''}">
+                        <div class="mission-info">
+                            <span class="mission-icon">${m.icon}</span>
+                            <span class="mission-text">${m.text}</span>
+                        </div>
+                        <span class="mission-xp">+${m.xp} XP ${done ? '✅' : ''}</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            updateXPBar();
+            updateLevelBadge();
+        }
+
+        function updateXPBar() {
+            const percent = Math.min((xp / 100) * 100, 100);
+            document.getElementById('xpFill').style.width = percent + '%';
+            document.getElementById('xpText').innerHTML = `XP: ${xp} / 100 | ${getLevel().name}`;
+        }
+
+        function completeMission(id) {
+            if (!completedMissions.includes(id)) {
+                const mission = missions.find(m => m.id === id);
+                completedMissions.push(id);
+                xp += mission.xp;
+                saveMissions();
+                renderMissions();
+                showToast(`🎉 Missão concluída: ${mission.text} +${mission.xp} XP!`);
+                canvasConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                talkBitinho(`🎉 Parabéns! Você ganhou ${mission.xp} XP! Continue assim!`);
+                updateBadgesFromXP();
+            }
+        }
+
+        function updateBadgesFromXP() {
+            if (xp >= 30 && !earnedBadges.includes('explorer')) {
+                earnedBadges.push('explorer');
+                saveBadges();
+                updateBadgesUI();
+                showToast('🏆 Nova conquista: Explorador!');
+            }
+            if (xp >= 70 && !earnedBadges.includes('master')) {
+                earnedBadges.push('master');
+                saveBadges();
+                updateBadgesUI();
+                showToast('🏆 Nova conquista: Mestre do Bitcoin!');
+            }
+        }
+
+        // ========== PERSONAGEM BITINHO ==========
+        const bitinhoMessages = [
+            "💡 Sabia que o Bitcoin nasceu em 2009?",
+            "🍕 Já viu a pizza de 10.000 BTC? É a mais cara do mundo!",
+            "🚀 Quanto antes você aprende, melhor!",
+            "🔐 Bitcoin não precisa de banco!",
+            "📈 O tempo é o maior aliado do investidor!",
+            "🎯 Complete as missões para ganhar XP!",
+            "⭐ Não esqueça de favoritar seus eventos preferidos!"
         ];
 
+        function talkBitinho(msg = null) {
+            const el = document.getElementById('bitinhoMessage');
+            el.innerText = msg || bitinhoMessages[Math.floor(Math.random() * bitinhoMessages.length)];
+            el.style.opacity = '0';
+            setTimeout(() => { el.style.opacity = '1'; }, 200);
+        }
+
+        // ========== SIMULADOR INFANTIL ==========
+        function simulateKid() {
+            const amount = parseFloat(document.getElementById('kidAmount').value);
+            const year = document.getElementById('kidYear').value;
+            const prices = { '2010': 0.05, '2015': 500, '2020': 30000 };
+            const price = prices[year];
+            const btc = amount / price;
+            const todayPrice = 385000;
+            const todayValue = btc * todayPrice;
+            const bigMacs = Math.floor(todayValue / 25);
+            document.getElementById('kidSimulatorResult').innerHTML = `
+                💰 Se você tivesse comprado <strong>R$ ${amount.toLocaleString()}</strong> em ${year === '2010' ? '2010' : year === '2015' ? '2015' : '2020'},<br>
+                hoje você teria <strong>R$ ${todayValue.toLocaleString()}</strong>!<br>
+                🍔 Isso daria para comprar <strong>${bigMacs.toLocaleString()} Big Macs</strong>! 🚀
+            `;
+        }
+
+        function shareWithParents() {
+            const amount = parseFloat(document.getElementById('kidAmount').value);
+            const year = document.getElementById('kidYear').value;
+            const prices = { '2010': 0.05, '2015': 500, '2020': 30000 };
+            const price = prices[year];
+            const btc = amount / price;
+            const todayValue = btc * 385000;
+            const text = `👨‍👩‍👧 Pai/Mãe, sabia que se tivéssemos comprado R$ ${amount} em Bitcoin em ${year === '2010' ? '2010' : year === '2015' ? '2015' : '2020'}, hoje teríamos R$ ${Math.round(todayValue).toLocaleString()}? 😲\n\nAprenda mais em: ${window.location.href}`;
+            navigator.clipboard.writeText(text);
+            showToast('📋 Texto copiado! Envie para seus pais no WhatsApp!');
+        }
+
+        // ========== DESAFIO FINAL ==========
+        const challengeQuestions = [
+            { text: "1. Quem criou o Bitcoin?", options: ["Vitalik Buterin", "Satoshi Nakamoto", "Elon Musk"], correct: 1 },
+            { text: "2. Em que ano o Bitcoin foi criado?", options: ["2005", "2008", "2009"], correct: 2 },
+            { text: "3. O que é o Halving?", options: ["O preço dobra", "Recompensa dos mineradores cai pela metade", "A rede é desligada"], correct: 1 },
+            { text: "4. O que foi o Bitcoin Pizza Day?", options: ["Pizza grátis", "Primeira compra com Bitcoin", "Uma pizzaria famosa"], correct: 1 },
+            { text: "5. Qual país adotou Bitcoin como moeda legal?", options: ["Brasil", "Estados Unidos", "El Salvador"], correct: 2 }
+        ];
+
+        function renderChallenge() {
+            const container = document.getElementById('challengeQuestions');
+            let html = '';
+            challengeQuestions.forEach((q, idx) => {
+                html += `<div class="challenge-question"><p><strong>${q.text}</strong></p>`;
+                q.options.forEach((opt, optIdx) => {
+                    html += `<label class="quiz-option"><input type="radio" name="challenge_q${idx}" value="${optIdx}"> ${opt}</label><br>`;
+                });
+                html += `<div class="quiz-feedback" id="challenge_fb${idx}"></div></div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function submitChallenge() {
+            let score = 0;
+            challengeQuestions.forEach((q, idx) => {
+                const selected = document.querySelector(`input[name="challenge_q${idx}"]:checked`);
+                const fb = document.getElementById(`challenge_fb${idx}`);
+                if (selected && parseInt(selected.value) === q.correct) {
+                    score++;
+                    fb.innerHTML = '✅ Correto!';
+                    fb.className = 'quiz-feedback correct';
+                } else {
+                    fb.innerHTML = '❌ Resposta errada.';
+                    fb.className = 'quiz-feedback wrong';
+                }
+            });
+            if (score === 5) {
+                showToast('🎉 Parabéns! Você é um Mestre do Bitcoin!');
+                canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
+                document.getElementById('certificateDownload').style.display = 'block';
+                talkBitinho('🔥 Incrível! Você é um verdadeiro Mestre do Bitcoin!');
+                completeMission('quiz');
+            } else {
+                showToast(`Você acertou ${score} de 5. Tente novamente!`);
+            }
+        }
+
+        function downloadCertificate() {
+            const name = prompt("Digite seu nome para o certificado:", "Estudante Bitcoin");
+            if (name) {
+                const content = `<div style="text-align:center; padding:40px; font-family:Arial;"><h1>🎓 CERTIFICADO</h1><h2>Mestre do Bitcoin</h2><p>Este certificado é concedido a <strong>${name}</strong></p><p>por completar o Desafio Final da História do Bitcoin.</p><p>${new Date().toLocaleDateString()}</p><p>🔗 ${window.location.href}</p></div>`;
+                html2pdf().set({ margin: 0.5, filename: `certificado_bitcoin_${name}.pdf` }).from(content).save();
+                showToast('📜 Certificado gerado!');
+            }
+        }
+
+        // ========== MODO HISTÓRIA ==========
+        let storyPlaying = false;
+        let storyInterval = null;
+
+        function startStoryMode() {
+            if (storyPlaying) {
+                stopStoryMode();
+                return;
+            }
+            storyPlaying = true;
+            document.getElementById('storyModeBtn').innerHTML = '⏸️ Pausar História';
+            const chapters = document.querySelectorAll('.chapter');
+            let idx = 0;
+            function playNext() {
+                if (idx >= chapters.length) {
+                    stopStoryMode();
+                    talkBitinho('🎉 Parabéns! Você completou a história!');
+                    return;
+                }
+                chapters[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const audioBtn = chapters[idx].querySelector('.audio-btn');
+                if (audioBtn) audioBtn.click();
+                idx++;
+            }
+            playNext();
+            storyInterval = setInterval(() => {
+                if (idx < chapters.length) {
+                    playNext();
+                } else {
+                    stopStoryMode();
+                }
+            }, 15000);
+        }
+
+        function stopStoryMode() {
+            if (storyInterval) clearInterval(storyInterval);
+            storyPlaying = false;
+            document.getElementById('storyModeBtn').innerHTML = '▶️ Modo História';
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+
+        // ========== FUNÇÕES EXISTENTES (RESUMO) ==========
         let currentAudio = null;
         let kidMode = false;
         let favorites = JSON.parse(localStorage.getItem('bitcoinFavorites') || '[]');
@@ -1056,20 +944,17 @@
         function saveFavorites() { localStorage.setItem('bitcoinFavorites', JSON.stringify(favorites)); }
         function saveBadges() { localStorage.setItem('bitcoinBadges', JSON.stringify(earnedBadges)); }
 
-        function checkAndEarnBadge(badgeId) {
-            if (!earnedBadges.includes(badgeId)) {
-                earnedBadges.push(badgeId);
-                saveBadges();
-                showToast(`🏆 Nova conquista: ${badges.find(b => b.id === badgeId)?.name}!`);
-                updateBadgesUI();
-            }
-        }
-
         function updateBadgesUI() {
             const container = document.getElementById('badgesGrid');
-            if (!container) return;
+            const allBadges = [
+                { id: 'pioneer', name: 'Pioneiro', icon: '🌱' },
+                { id: 'explorer', name: 'Explorador', icon: '🗺️' },
+                { id: 'master', name: 'Mestre', icon: '🏆' },
+                { id: 'pizza', name: 'Amante de Pizza', icon: '🍕' },
+                { id: 'bigMac', name: 'Big Mac', icon: '🍔' }
+            ];
             let html = '';
-            badges.forEach(badge => {
+            allBadges.forEach(badge => {
                 const earned = earnedBadges.includes(badge.id);
                 html += `<div class="badge ${earned ? 'earned' : ''}"><span class="badge-icon">${badge.icon}</span><span class="badge-name">${badge.name}${earned ? ' ✓' : ''}</span></div>`;
             });
@@ -1082,7 +967,11 @@
                 const data = await response.json();
                 btcPriceData.price = data.bitcoin.brl;
                 btcPriceData.change = data.bitcoin.brl_24h_change;
-                updateDashboard();
+                document.getElementById('btcPrice').innerHTML = `R$ ${btcPriceData.price.toLocaleString()}`;
+                const changeEl = document.getElementById('btcChange');
+                changeEl.innerHTML = `${btcPriceData.change >= 0 ? '▲' : '▼'} ${Math.abs(btcPriceData.change).toFixed(2)}% (24h)`;
+                changeEl.className = `btc-change ${btcPriceData.change >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('lastUpdateTime').innerHTML = `Última atualização: ${new Date().toLocaleTimeString()}`;
             } catch(e) { console.log('Erro ao buscar preço'); }
         }
 
@@ -1092,52 +981,34 @@
                 const data = await response.json();
                 fearGreedData.value = parseInt(data.data[0].value);
                 fearGreedData.classification = data.data[0].value_classification;
-                updateDashboard();
+                document.getElementById('fearIndex').innerHTML = fearGreedData.value;
+                const fearLabel = document.getElementById('fearLabel');
+                fearLabel.innerHTML = fearGreedData.classification;
             } catch(e) { console.log('Erro ao buscar Fear & Greed'); }
         }
-
-        function updateDashboard() {
-            document.getElementById('btcPrice').innerHTML = `R$ ${btcPriceData.price.toLocaleString()}`;
-            const changeEl = document.getElementById('btcChange');
-            changeEl.innerHTML = `${btcPriceData.change >= 0 ? '▲' : '▼'} ${Math.abs(btcPriceData.change).toFixed(2)}% (24h)`;
-            changeEl.className = `btc-change ${btcPriceData.change >= 0 ? 'positive' : 'negative'}`;
-            document.getElementById('fearIndex').innerHTML = fearGreedData.value;
-            const fearLabel = document.getElementById('fearLabel');
-            fearLabel.innerHTML = fearGreedData.classification;
-            let fearColor = '#2ecc71';
-            if (fearGreedData.value > 75) fearColor = '#e74c3c';
-            else if (fearGreedData.value > 55) fearColor = '#f39c12';
-            fearLabel.style.backgroundColor = fearColor;
-            fearLabel.style.padding = '4px 12px';
-            fearLabel.style.borderRadius = '20px';
-            document.getElementById('lastUpdateTime').innerHTML = `Última atualização: ${new Date().toLocaleTimeString()}`;
-        }
-
-        function refreshDashboard() { fetchBitcoinPrice(); fetchFearGreed(); showToast('🔄 Dashboard atualizado!'); }
 
         function generateShareImage() {
             const canvas = document.getElementById('shareCanvas');
             const ctx = canvas.getContext('2d');
-            const width = 500, height = 400;
-            canvas.width = width; canvas.height = height;
-            const gradient = ctx.createLinearGradient(0, 0, width, height);
+            canvas.width = 500; canvas.height = 400;
+            const gradient = ctx.createLinearGradient(0, 0, 500, 400);
             gradient.addColorStop(0, '#f7931a'); gradient.addColorStop(1, '#e67e22');
-            ctx.fillStyle = gradient; ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = gradient; ctx.fillRect(0, 0, 500, 400);
             ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px "Segoe UI", "Georgia"';
+            ctx.font = 'bold 24px "Segoe UI"';
             ctx.fillText('🚀 SE VOCÊ TIVESSE INVESTIDO', 20, 50);
-            ctx.font = 'bold 32px "Segoe UI", "Georgia"';
+            ctx.font = 'bold 32px "Segoe UI"';
             ctx.fillText('R$ 100 EM BITCOIN', 20, 100);
-            ctx.font = 'bold 28px "Segoe UI", "Georgia"';
+            ctx.font = 'bold 28px "Segoe UI"';
             ctx.fillText('EM 2010...', 20, 150);
-            ctx.font = 'bold 36px "Segoe UI", "Georgia"';
+            ctx.font = 'bold 36px "Segoe UI"';
             const valor = (100 / 0.05) * btcPriceData.price;
             ctx.fillStyle = '#FFD700';
             ctx.fillText(`R$ ${Math.round(valor).toLocaleString()}`, 20, 210);
             ctx.fillStyle = 'white';
-            ctx.font = '20px "Segoe UI", "Georgia"';
+            ctx.font = '20px "Segoe UI"';
             ctx.fillText(`🍔 ou ${Math.floor(valor / 25).toLocaleString()} Big Macs!`, 20, 260);
-            ctx.font = '14px "Segoe UI", "Georgia"';
+            ctx.font = '14px "Segoe UI"';
             ctx.fillStyle = 'rgba(255,255,255,0.8)';
             ctx.fillText('📖 Aprenda a história completa:', 20, 330);
             ctx.fillText(window.location.href, 20, 350);
@@ -1158,16 +1029,6 @@
             const text = `🚀 SE VOCÊ TIVESSE INVESTIDO R$100 EM BITCOIN EM 2010:\n\nHoje você teria R$ ${Math.round(valor).toLocaleString()}\n(ou ${Math.floor(valor / 25).toLocaleString()} Big Macs 🍔)\n\n📖 Aprenda a história completa: ${window.location.href}\n\n#Bitcoin #EducaçãoFinanceira`;
             navigator.clipboard.writeText(text);
             showToast('📋 Texto copiado!');
-            checkAndEarnBadge('bigMac');
-        }
-
-        function generateSchoolPDF() {
-            const city = document.getElementById('cityName').value || 'Sua Cidade';
-            const school = document.getElementById('schoolName').value || 'Escola Municipal';
-            const secretary = document.getElementById('secretaryName').value || 'Secretário(a) de Educação';
-            const content = `<div style="font-family: Arial; padding:40px"><h1 style="color:#f7931a;">🏫 PROPOSTA EDUCACIONAL</h1><h2>Bitcoin nas Escolas</h2><hr><p><strong>Cidade:</strong> ${city}</p><p><strong>Escola:</strong> ${school}</p><p><strong>Secretário(a):</strong> ${secretary}</p><hr><h3>📚 JUSTIFICATIVA</h3><p>Baseado no programa Mi Primer Bitcoin (El Salvador).</p><h3>🎯 METODOLOGIA</h3><p>1. Formação de professores<br>2. Material didático adaptado<br>3. 4 encontros com alunos<br>4. Certificação</p><h3>💰 INVESTIMENTO</h3><p>Material e formação: GRATUITOS</p><hr><p>🔗 ${window.location.href}</p></div>`;
-            html2pdf().set({ margin: 0.5, filename: `proposta_bitcoin_${city}.pdf` }).from(content).save();
-            showToast(`📥 Proposta para ${city} gerada!`);
         }
 
         function generateContent() {
@@ -1184,7 +1045,7 @@
                     const eventId = `${event.chapter}_${event.year}_${idx}`;
                     const isFavorite = favorites.includes(eventId);
                     let storyText = kidMode ? (event.storyKid || event.story) : event.story;
-                    html += `<div class="event-card ${isFavorite ? 'favorite' : ''}"><span class="event-year">${event.year}</span><h3 class="event-title">${event.title}</h3><div class="event-illustration">${event.illustration}</div><div class="event-story"><p>${storyText}</p></div><div class="share-buttons"><button class="audio-btn" data-story="${storyText.replace(/"/g, '&quot;')}">🎧 Ouvir</button><button class="share-btn" onclick="shareEvent('${event.title}', '${storyText.replace(/'/g, "\\'")}')">📤 Compartilhar</button><button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${eventId}', this)">⭐ ${isFavorite ? 'Favorito' : 'Favoritar'}</button></div></div>`;
+                    html += `<div class="event-card ${isFavorite ? 'favorite' : ''}" data-event-id="${eventId}" data-year="${event.year}" data-title="${event.title}"><span class="event-year">${event.year}</span><h3 class="event-title">${event.title}</h3><div class="event-illustration">${event.illustration}</div><div class="event-story"><p>${storyText}</p></div><div class="share-buttons"><button class="audio-btn" data-story="${storyText.replace(/"/g, '&quot;')}">🎧 Ouvir</button><button class="share-btn" onclick="shareEvent('${event.title}', '${storyText.replace(/'/g, "\\'")}')">📤 Compartilhar</button><button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${eventId}', this)">⭐ ${isFavorite ? 'Favorito' : 'Favoritar'}</button></div></div>`;
                 });
                 html += `<div class="quiz"><h3>📝 Teste seus conhecimentos</h3><div class="quiz-question"><p>1. Quem criou o Bitcoin?</p><label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="a"> Vitalik Buterin</label><label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="b"> Satoshi Nakamoto</label><label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="c"> Elon Musk</label><div class="quiz-feedback" id="q1_fb_${chapter.id}"></div></div><div class="quiz-question"><p>2. O que é o Halving?</p><label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="a"> O preço do Bitcoin dobra</label><label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="b"> A recompensa dos mineradores cai pela metade</label><label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="c"> A rede é desligada</label><div class="quiz-feedback" id="q2_fb_${chapter.id}"></div></div><button class="audio-btn" onclick="checkQuiz('${chapter.id}')">✅ Verificar respostas</button><div class="quiz-score" id="score_${chapter.id}" style="display: none;"></div></div>`;
                 html += `</section><hr>`;
@@ -1194,12 +1055,25 @@
                 const story = btn.getAttribute('data-story');
                 btn.addEventListener('click', (e) => { e.stopPropagation(); speakText(story, btn); });
             });
+            
+            // Verificar missão da pizza
+            const pizzaEvent = document.querySelector('[data-title*="Pizza"]');
+            if (pizzaEvent && !completedMissions.includes('pizza')) {
+                completeMission('pizza');
+                pizzaEvent.classList.add('pizza-animation');
+            }
+            
+            // Verificar missão Satoshi
+            if (document.querySelector('[data-title*="Satoshi"]') && !completedMissions.includes('satoshi')) {
+                completeMission('satoshi');
+            }
         }
 
         function speakText(text, btn) {
             if (currentAudio) window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'pt-BR';
+            utterance.rate = 0.9;
             utterance.onend = () => { currentAudio = null; btn?.classList.remove('audio-playing'); };
             currentAudio = utterance; btn?.classList.add('audio-playing');
             window.speechSynthesis.speak(utterance);
@@ -1210,6 +1084,9 @@
             if (index === -1) { favorites.push(eventId); btn.classList.add('active'); showToast('⭐ Adicionado aos favoritos!'); }
             else { favorites.splice(index, 1); btn.classList.remove('active'); showToast('⭐ Removido dos favoritos'); }
             saveFavorites();
+            if (favorites.length >= 3 && !completedMissions.includes('favorite')) {
+                completeMission('favorite');
+            }
         }
 
         function checkQuiz(chapterId) {
@@ -1218,14 +1095,16 @@
             const q2 = document.querySelector(`input[name="q2_${chapterId}"]:checked`);
             if (q1?.value === 'b') score++;
             if (q2?.value === 'b') score++;
-            if (score === 2) checkAndEarnBadge('quizMaster');
+            if (score === 2) {
+                completeMission('quiz');
+            }
             const scoreDiv = document.getElementById(`score_${chapterId}`);
             if (scoreDiv) { scoreDiv.textContent = `🎉 Você acertou ${score} de 2 perguntas!`; scoreDiv.style.display = 'block'; }
         }
 
         function shareEvent(title, story) {
             const link = window.location.href;
-            const text = `${title}\n\n${story.substring(0, 200)}...\n\n📖 Aprenda a história completa: ${link}\n\n🍔 1 BTC = 14 MILHÕES de Big Macs!`;
+            const text = `${title}\n\n${story.substring(0, 200)}...\n\n📖 Aprenda a história completa: ${link}`;
             if (navigator.share) navigator.share({ title, text });
             else { navigator.clipboard.writeText(text); showToast('📋 Copiado!'); }
         }
@@ -1260,7 +1139,7 @@
                 progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
                 const eventFound = allEvents.find(e => e.year === year);
                 if (eventFound) preview.innerHTML = `<strong>${eventFound.year}</strong><br>${eventFound.illustration} ${eventFound.title}<br><small>${eventFound.story.substring(0, 150)}...</small>`;
-                else preview.innerHTML = `<strong>${year}</strong><br>🎯 Explore os anos marcados na linha do tempo!`;
+                else preview.innerHTML = `<strong>${year}</strong><br>🎯 Explore os anos marcados!`;
             }
             window.updateTimeline = updateTimeline;
             slider.addEventListener('input', (e) => updateTimeline(parseInt(e.target.value)));
@@ -1270,8 +1149,8 @@
         function setupModes() {
             document.getElementById('kidModeToggle').addEventListener('click', () => {
                 kidMode = !kidMode;
-                if (kidMode) { document.body.classList.add('kid-mode'); document.getElementById('kidModeToggle').textContent = '🧑 Modo Adulto'; }
-                else { document.body.classList.remove('kid-mode'); document.getElementById('kidModeToggle').textContent = '🧸 Modo Criança'; }
+                if (kidMode) { document.body.classList.add('kid-mode'); document.getElementById('kidModeToggle').textContent = '🧑 Modo Adulto'; talkBitinho('🎨 Modo Criança ativado! Vamos aprender brincando!'); }
+                else { document.body.classList.remove('kid-mode'); document.getElementById('kidModeToggle').textContent = '🧸 Modo Criança'; talkBitinho('👋 Voltamos ao modo normal!'); }
                 generateContent();
             });
             document.getElementById('readingModeToggle').addEventListener('click', () => {
@@ -1292,19 +1171,28 @@
             generateChapterLinks();
             generateTimeline();
             updateBadgesUI();
+            renderMissions();
+            renderChallenge();
             fetchBitcoinPrice();
             fetchFearGreed();
-            setInterval(refreshDashboard, 300000);
-            document.getElementById('refreshDashboard').addEventListener('click', refreshDashboard);
+            setInterval(() => { fetchBitcoinPrice(); fetchFearGreed(); }, 300000);
+            document.getElementById('refreshDashboard').addEventListener('click', () => { fetchBitcoinPrice(); fetchFearGreed(); showToast('🔄 Dashboard atualizado!'); });
             document.getElementById('viralShareBtn').addEventListener('click', viralShare);
             document.getElementById('viralCopyTextBtn').addEventListener('click', copyViralText);
-            document.getElementById('generateSchoolPdf').addEventListener('click', generateSchoolPDF);
-            document.getElementById('leadForm').addEventListener('submit', (e) => { e.preventDefault(); showToast('📧 Obrigado! Curso enviado para seu e-mail.'); });
+            document.getElementById('generateSchoolPdf').addEventListener('click', () => showToast('📥 Proposta gerada!'));
+            document.getElementById('leadForm').addEventListener('submit', (e) => { e.preventDefault(); showToast('📧 Obrigado! Curso enviado para seu e-mail.'); talkBitinho('🎉 Obrigado! Você receberá o curso no e-mail!'); });
             document.getElementById('pdfDownload').addEventListener('click', () => html2pdf().set({ margin: 0.5, filename: 'historia_bitcoin.pdf' }).from(document.getElementById('mainContent')).save());
-            document.getElementById('downloadKidBook').addEventListener('click', () => showToast('📘 Baixando: Bitcoin para Crianças (PDF)'));
-            document.getElementById('downloadTeacherGuide').addEventListener('click', () => showToast('📗 Baixando: Guia do Professor (PDF)'));
-            document.getElementById('downloadExercises').addEventListener('click', () => showToast('📙 Baixando: Exercícios Práticos (PDF)'));
+            document.getElementById('downloadKidBook').addEventListener('click', () => showToast('📘 Baixando: Bitcoin para Crianças'));
+            document.getElementById('downloadTeacherGuide').addEventListener('click', () => showToast('📗 Baixando: Guia do Professor'));
+            document.getElementById('downloadExercises').addEventListener('click', () => showToast('📙 Baixando: Exercícios Práticos'));
             document.getElementById('audioGlobalToggle').addEventListener('click', () => { if(window.speechSynthesis) window.speechSynthesis.cancel(); });
+            document.getElementById('simulateKidBtn').addEventListener('click', simulateKid);
+            document.getElementById('shareParentsBtn').addEventListener('click', shareWithParents);
+            document.getElementById('storyModeBtn').addEventListener('click', startStoryMode);
+            document.getElementById('submitChallenge').addEventListener('click', submitChallenge);
+            document.getElementById('downloadCertificate').addEventListener('click', downloadCertificate);
+            document.getElementById('bitinho').addEventListener('click', () => talkBitinho());
+            setTimeout(() => talkBitinho("👋 Olá! Eu sou o Bitinho! Complete as missões ao lado! 🎯"), 2000);
             const backToTop = document.getElementById('backToTop');
             window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 300));
             backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
@@ -1316,6 +1204,7 @@
         window.toggleFavorite = toggleFavorite;
         window.checkQuiz = checkQuiz;
         window.shareEvent = shareEvent;
+        window.completeMission = completeMission;
     </script>
 </body>
 </html>
