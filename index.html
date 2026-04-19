@@ -5,77 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simulador HODL - Clube DCA</title>
   
-  <!-- Bibliotecas externas (remova se já existirem no seu projeto) -->
+  <!-- Chart.js leve (versão UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   
   <style>
-    /* ===== ESTILOS DO SIMULADOR HODL - Isolados com prefixo ===== */
+    /* ===== ESTILOS - Isolados e mínimos ===== */
     #tab-simulador-hodl {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 16px;
       color: #e0e0e0;
       background: #0f0f12;
       border-radius: 12px;
-      box-sizing: border-box;
     }
-
     #tab-simulador-hodl * { box-sizing: border-box; }
-
+    
     #tab-simulador-hodl .hodl-header {
       text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
       border-bottom: 1px solid #2a2a3a;
     }
-
     #tab-simulador-hodl .hodl-header h2 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       margin: 0;
       color: #f7931a;
     }
-
     #tab-simulador-hodl .hodl-header p {
-      color: #aaa;
-      margin: 8px 0 0;
-      font-size: 0.95rem;
+      color: #999;
+      margin: 6px 0 0;
+      font-size: 0.9rem;
     }
 
     #tab-simulador-hodl .hodl-controls {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
       background: #1a1a24;
-      padding: 20px;
+      padding: 16px;
       border-radius: 10px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-
     #tab-simulador-hodl .control-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
-
     #tab-simulador-hodl .control-group label {
-      font-size: 0.85rem;
-      color: #ccc;
-      font-weight: 500;
+      font-size: 0.8rem;
+      color: #bbb;
     }
-
     #tab-simulador-hodl .control-group input,
     #tab-simulador-hodl .control-group select {
-      padding: 10px 12px;
+      padding: 8px 10px;
       border: 1px solid #3a3a52;
-      border-radius: 8px;
+      border-radius: 6px;
       background: #0f0f15;
       color: #fff;
-      font-size: 1rem;
+      font-size: 0.95rem;
       outline: none;
-      transition: border-color 0.2s;
     }
-
     #tab-simulador-hodl .control-group input:focus,
     #tab-simulador-hodl .control-group select:focus {
       border-color: #f7931a;
@@ -86,106 +76,100 @@
       background: linear-gradient(135deg, #f7931a, #ffaa33);
       color: #000;
       border: none;
-      padding: 14px;
-      font-size: 1.1rem;
+      padding: 12px;
+      font-size: 1rem;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.2s;
     }
-
     #tab-simulador-hodl .btn-calcular:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(247, 147, 26, 0.4);
+      box-shadow: 0 4px 15px rgba(247, 147, 26, 0.3);
     }
-
-    #tab-simulador-hodl .btn-calcular:active {
-      transform: translateY(0);
-    }
-
     #tab-simulador-hodl .btn-calcular:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
-      transform: none;
     }
 
     #tab-simulador-hodl .hodl-results {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
-
     #tab-simulador-hodl .result-card {
       background: #1a1a24;
-      padding: 16px;
-      border-radius: 10px;
+      padding: 12px;
+      border-radius: 8px;
       text-align: center;
       border: 1px solid #2a2a3a;
     }
-
     #tab-simulador-hodl .result-card .label {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #aaa;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
-
     #tab-simulador-hodl .result-card .value {
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: #fff;
     }
-
     #tab-simulador-hodl .result-card .value.positive { color: #00c853; }
     #tab-simulador-hodl .result-card .value.negative { color: #ff5252; }
 
     #tab-simulador-hodl .hodl-chart-container {
       background: #1a1a24;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 16px;
       border: 1px solid #2a2a3a;
-      height: 400px;
-      position: relative;
+      height: 320px;
     }
-
     #tab-simulador-hodl #hodlChart {
       width: 100%;
       height: 100%;
     }
 
-    #tab-simulador-hodl .hodl-footer {
-      text-align: center;
-      color: #777;
-      font-size: 0.85rem;
-      padding-top: 16px;
-      border-top: 1px solid #2a2a3a;
-    }
-
     #tab-simulador-hodl .loading {
       text-align: center;
-      padding: 40px;
+      padding: 24px;
       color: #aaa;
       display: none;
     }
-
     #tab-simulador-hodl .loading.active { display: block; }
     
     #tab-simulador-hodl .error-msg {
       background: #2a1a1a;
       border: 1px solid #ff5252;
-      color: #ff8a8a;
-      padding: 12px;
-      border-radius: 8px;
-      margin: 16px 0;
+      color: #ff9999;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 12px 0;
       display: none;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
-    
     #tab-simulador-hodl .error-msg.active { display: block; }
+    
+    #tab-simulador-hodl .warning-banner {
+      background: #2a2515;
+      border: 1px solid #f7931a;
+      color: #ffcc80;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 12px 0;
+      font-size: 0.85rem;
+      display: none;
+    }
+    #tab-simulador-hodl .warning-banner.active { display: block; }
 
-    /* Responsividade */
-    @media (max-width: 768px) {
+    #tab-simulador-hodl .hodl-footer {
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
+      padding-top: 12px;
+      border-top: 1px solid #2a2a3a;
+    }
+
+    @media (max-width: 600px) {
       #tab-simulador-hodl .hodl-controls {
         grid-template-columns: 1fr;
       }
@@ -193,10 +177,7 @@
         grid-template-columns: repeat(2, 1fr);
       }
       #tab-simulador-hodl .hodl-chart-container {
-        height: 300px;
-      }
-      #tab-simulador-hodl .hodl-header h2 {
-        font-size: 1.5rem;
+        height: 260px;
       }
     }
   </style>
@@ -204,19 +185,23 @@
 <body>
 
   <!-- ===== ABA SIMULADOR HODL - INÍCIO ===== -->
-  <div id="tab-simulador-hodl" class="tab-content" style="display:none;">
+  <div id="tab-simulador-hodl" class="tab-content" style="display:none;" data-hodl-initialized="false">
     
     <div class="hodl-header">
       <h2>🪙 Simulador HODL</h2>
-      <p>Descubra o resultado de investir em Bitcoin com DCA ao longo do tempo</p>
+      <p>Simule DCA em Bitcoin com dados agregados • Rápido e leve</p>
+    </div>
+
+    <!-- Banner file:// warning -->
+    <div class="warning-banner" id="hodl-file-warning">
+      ⚠️ Modo local detectado. Para melhor performance, use um servidor (Live Server, Vercel, etc.)
     </div>
 
     <div class="hodl-controls">
       <div class="control-group">
-        <label for="hodl-amount">Valor do Aporte</label>
+        <label for="hodl-amount">Aporte</label>
         <input type="number" id="hodl-amount" min="1" step="any" value="100" />
       </div>
-
       <div class="control-group">
         <label for="hodl-currency">Moeda</label>
         <select id="hodl-currency">
@@ -224,7 +209,6 @@
           <option value="USD" selected>USD (US$)</option>
         </select>
       </div>
-
       <div class="control-group">
         <label for="hodl-frequency">Frequência</label>
         <select id="hodl-frequency">
@@ -234,51 +218,48 @@
           <option value="monthly">Mensal</option>
         </select>
       </div>
-
       <div class="control-group">
-        <label for="hodl-start">Data Início</label>
-        <input type="date" id="hodl-start" />
+        <label for="hodl-days">Período</label>
+        <select id="hodl-days">
+          <option value="365">1 ano</option>
+          <option value="730">2 anos</option>
+          <option value="1825" selected>5 anos</option>
+          <option value="3650">10 anos</option>
+        </select>
       </div>
-
-      <div class="control-group">
-        <label for="hodl-end">Data Fim</label>
-        <input type="date" id="hodl-end" />
-      </div>
-
-      <button class="btn-calcular" id="btn-calcular-hodl">🔍 Calcular Simulação</button>
+      <button class="btn-calcular" id="btn-calcular-hodl">🔍 Calcular</button>
     </div>
 
     <div class="error-msg" id="hodl-error"></div>
-
     <div class="loading" id="hodl-loading">
-      ⏳ Buscando dados históricos do Bitcoin...<br/>
-      <small>Isso pode levar alguns segundos • Dados em cache para acesso futuro</small>
+      ⏳ Carregando dados...<br/>
+      <small style="color:#777">Cache ativo • Dados agregados pela API</small>
     </div>
 
     <div class="hodl-results" id="hodl-results" style="display:none;">
       <div class="result-card">
-        <div class="label">Total Investido</div>
+        <div class="label">Investido</div>
         <div class="value" id="res-invested">R$ 0,00</div>
       </div>
       <div class="result-card">
-        <div class="label">BTC Acumulado</div>
-        <div class="value" id="res-btc">0,00000000 BTC</div>
+        <div class="label">BTC</div>
+        <div class="value" id="res-btc">0 BTC</div>
       </div>
       <div class="result-card">
-        <div class="label">Valor Atual</div>
+        <div class="label">Atual</div>
         <div class="value" id="res-current">R$ 0,00</div>
       </div>
       <div class="result-card">
         <div class="label">ROI</div>
-        <div class="value" id="res-roi">+0,00%</div>
+        <div class="value" id="res-roi">+0%</div>
       </div>
       <div class="result-card">
         <div class="label">Preço Médio</div>
-        <div class="value" id="res-avg-price">R$ 0,00</div>
+        <div class="value" id="res-avg-price">R$ 0</div>
       </div>
       <div class="result-card">
-        <div class="label">Preço Atual BTC</div>
-        <div class="value" id="res-current-price">R$ 0,00</div>
+        <div class="label">Preço Hoje</div>
+        <div class="value" id="res-current-price">R$ 0</div>
       </div>
     </div>
 
@@ -287,525 +268,402 @@
     </div>
 
     <div class="hodl-footer">
-      <p>💡 Dados históricos via CoinGecko API • Cálculos simulados • Não é recomendação de investimento</p>
-      <p><small>✅ Parâmetros e dados salvos automaticamente no seu navegador • Cache válido por 6h</small></p>
+      <p>💡 API: CoinGecko (dados agregados) • Cache: 6h • Não é recomendação</p>
     </div>
-
   </div>
-  <!-- ===== ABA SIMULADOR HODL - FIM ===== -->
+  <!-- ===== FIM ABA ===== -->
 
   <script>
     /**
-     * SIMULADOR HODL - Clube DCA (VERSÃO OTIMIZADA)
+     * SIMULADOR HODL - VERSÃO ULTRA OTIMIZADA
      * 
-     * 🚀 Melhorias de performance:
-     * - Cache inteligente no localStorage (6h de validade)
-     * - Downsampling de dados para gráficos com muitos pontos
-     * - Animações desativadas no Chart.js para renderização instantânea
-     * - Tratamento de erros de rate limit da API
-     * - Limpeza automática de cache antigo
-     * - Lazy loading: cálculo só ocorre quando usuário clica ou tem cache válido
-     * 
-     * ✅ Funcionalidades mantidas:
-     * - Seletor de moeda (BRL/USD)
-     * - Frequências: diária, semanal, quinzenal, mensal
-     * - Salvamento automático no localStorage
-     * - Gráfico interativo com eixo logarítmico
-     * - Cálculo de ROI, preço médio, acumulação de BTC
+     * 🔥 CORREÇÕES APLICADAS (conforme diagnóstico):
+     * 1. ✅ API: /market_chart?days=XXX (dados agregados, não range bruto)
+     * 2. ✅ Loop: iterar sobre array de preços com step, não while+toISOString
+     * 3. ✅ Gráfico: max 150 pontos + escala linear + renderização com delay
+     * 4. ✅ Lazy init: só carrega quando aba está visível
+     * 5. ✅ file:// warning: alerta se aberto localmente sem servidor
+     * 6. ✅ Cache: mantido, mas mais leve (só preços + timestamp)
      */
 
     (function() {
       'use strict';
 
-      // ===== CONFIGURAÇÕES OTIMIZADAS =====
       const CONFIG = {
         apiBase: 'https://api.coingecko.com/api/v3',
         coinId: 'bitcoin',
-        storageKey: 'clubeDca_hodlSimulator_params',
-        cacheKey: 'clubeDca_hodl_priceCache_v2',
-        cacheExpiry: 6 * 60 * 60 * 1000, // 6 horas em ms
-        maxCacheSize: 1.5 * 1024 * 1024, // 1.5MB limite para localStorage
-        maxChartPoints: 400, // Limite de pontos no gráfico para performance
-        chart: null
+        storageKey: 'hodl_params_v3',
+        cacheKey: 'hodl_cache_v3',
+        cacheExpiry: 6 * 60 * 60 * 1000, // 6h
+        maxChartPoints: 150, // 🔥 Reduzido de 400 para 150
+        chartDelay: 100, // 🔥 Delay para renderizar gráfico depois dos resultados
+        chart: null,
+        initialized: false
       };
 
-      // ===== ELEMENTOS DOM =====
-      const els = {
-        amount: document.getElementById('hodl-amount'),
-        currency: document.getElementById('hodl-currency'),
-        frequency: document.getElementById('hodl-frequency'),
-        startDate: document.getElementById('hodl-start'),
-        endDate: document.getElementById('hodl-end'),
-        btnCalculate: document.getElementById('btn-calcular-hodl'),
-        loading: document.getElementById('hodl-loading'),
-        error: document.getElementById('hodl-error'),
-        results: document.getElementById('hodl-results'),
-        resInvested: document.getElementById('res-invested'),
-        resBtc: document.getElementById('res-btc'),
-        resCurrent: document.getElementById('res-current'),
-        resRoi: document.getElementById('res-roi'),
-        resAvgPrice: document.getElementById('res-avg-price'),
-        resCurrentPrice: document.getElementById('res-current-price'),
-        chartCanvas: document.getElementById('hodlChart')
-      };
+      const els = {};
 
-      // ===== UTILITÁRIOS DE FORMATAÇÃO =====
-      function formatDateInput(date) {
-        return date.toISOString().split('T')[0];
+      // ===== INICIALIZAÇÃO LAZY (só quando aba visível) =====
+      function getElements() {
+        if (els.amount) return; // Já inicializado
+        
+        const tab = document.getElementById('tab-simulador-hodl');
+        if (!tab) return false;
+        
+        Object.assign(els, {
+          tab,
+          amount: document.getElementById('hodl-amount'),
+          currency: document.getElementById('hodl-currency'),
+          frequency: document.getElementById('hodl-frequency'),
+          days: document.getElementById('hodl-days'),
+          btn: document.getElementById('btn-calcular-hodl'),
+          loading: document.getElementById('hodl-loading'),
+          error: document.getElementById('hodl-error'),
+          warning: document.getElementById('hodl-file-warning'),
+          results: document.getElementById('hodl-results'),
+          res: {
+            invested: document.getElementById('res-invested'),
+            btc: document.getElementById('res-btc'),
+            current: document.getElementById('res-current'),
+            roi: document.getElementById('res-roi'),
+            avgPrice: document.getElementById('res-avg-price'),
+            currentPrice: document.getElementById('res-current-price')
+          },
+          chartCanvas: document.getElementById('hodlChart')
+        });
+        
+        // 🔥 Alerta file://
+        if (window.location.protocol === 'file:') {
+          els.warning?.classList.add('active');
+        }
+        
+        return true;
       }
 
-      function formatCurrency(value, currency) {
-        if (!value || isNaN(value)) return currency === 'BRL' ? 'R$ 0,00' : '$0.00';
-        return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', {
-          style: 'currency',
-          currency: currency,
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }).format(value);
-      }
-
-      function formatBTC(value) {
-        if (!value || isNaN(value)) return '0 sats';
-        if (value >= 1) return value.toFixed(8) + ' BTC';
-        return (value * 100000000).toFixed(0) + ' sats';
-      }
-
-      function formatPercent(value) {
-        if (!value && value !== 0) return '+0,00%';
-        const sign = value >= 0 ? '+' : '';
-        return sign + value.toFixed(2) + '%';
-      }
-
-      // ===== SISTEMA DE CACHE INTELIGENTE =====
-      function getCacheKey(currency, from, to) {
-        return `${currency.toLowerCase()}_${from}_${to}`;
-      }
-
-      function getCachedPrices(currency, from, to) {
-        try {
-          const raw = localStorage.getItem(CONFIG.cacheKey);
-          if (!raw) return null;
-          
-          const cache = JSON.parse(raw);
-          const key = getCacheKey(currency, from, to);
-          
-          if (cache[key] && Date.now() - cache[key].timestamp < CONFIG.cacheExpiry) {
-            console.log('✅ Cache HIT:', key);
-            return cache[key].data;
-          }
-          console.log('⏰ Cache EXPIRED:', key);
-          return null;
-        } catch (e) {
-          console.warn('⚠️ Erro ao ler cache:', e);
-          return null;
+      function initLazy() {
+        if (CONFIG.initialized) return;
+        if (!getElements()) return;
+        
+        // Check se aba está visível
+        if (els.tab.style.display === 'none' || els.tab.getAttribute('data-hodl-initialized') === 'true') {
+          return;
+        }
+        
+        CONFIG.initialized = true;
+        els.tab.setAttribute('data-hodl-initialized', 'true');
+        
+        // Setup inicial
+        loadParams();
+        bindEvents();
+        
+        // Auto-calcular se tem cache válido
+        if (hasValidCache()) {
+          setTimeout(() => calculate(true), 200);
         }
       }
 
-      function setCachedPrices(currency, from, to, data) {
+      function bindEvents() {
+        els.btn.addEventListener('click', () => calculate(false));
+        
+        // Salvar parâmetros ao mudar
+        ['amount','currency','frequency','days'].forEach(id => {
+          els[id]?.addEventListener('change', saveParams);
+        });
+        
+        // Observer para detectar quando aba fica visível
+        if ('IntersectionObserver' in window) {
+          const obs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting && els.tab.style.display !== 'none') {
+                initLazy();
+              }
+            });
+          }, { threshold: 0.1 });
+          obs.observe(els.tab);
+        }
+      }
+
+      // ===== CACHE LEVE =====
+      function cacheKey(currency, days) {
+        return `${currency}_${days}`;
+      }
+
+      function getCache(currency, days) {
+        try {
+          const raw = localStorage.getItem(CONFIG.cacheKey);
+          if (!raw) return null;
+          const cache = JSON.parse(raw);
+          const key = cacheKey(currency, days);
+          const entry = cache[key];
+          if (entry && Date.now() - entry.t < CONFIG.cacheExpiry) {
+            return entry.d;
+          }
+        } catch(e) {}
+        return null;
+      }
+
+      function setCache(currency, days, data) {
         try {
           let cache = {};
-          const raw = localStorage.getItem(CONFIG.cacheKey);
-          if (raw) cache = JSON.parse(raw);
+          try { cache = JSON.parse(localStorage.getItem(CONFIG.cacheKey) || '{}'); } catch(_) {}
+          cache[cacheKey(currency, days)] = { d: data, t: Date.now() };
           
-          const key = getCacheKey(currency, from, to);
-          cache[key] = { data, timestamp: Date.now() };
-          
-          // Limpeza: remove entradas mais antigas se exceder tamanho máximo
-          const cacheStr = JSON.stringify(cache);
-          if (cacheStr.length > CONFIG.maxCacheSize) {
-            const keys = Object.keys(cache).sort((a, b) => cache[a].timestamp - cache[b].timestamp);
-            while (keys.length > 10 && JSON.stringify(cache).length > CONFIG.maxCacheSize) {
-              delete cache[keys.shift()];
-            }
+          // Limpeza: mantém só últimas 5 entradas
+          const keys = Object.keys(cache);
+          if (keys.length > 5) {
+            keys.sort((a,b) => cache[a].t - cache[b].t).slice(0, -5).forEach(k => delete cache[k]);
           }
-          
           localStorage.setItem(CONFIG.cacheKey, JSON.stringify(cache));
-          console.log('💾 Cache SAVE:', key);
-        } catch (e) {
-          console.warn('⚠️ Erro ao salvar cache:', e);
-          // Tenta limpar cache corrompido
+        } catch(e) {
           try { localStorage.removeItem(CONFIG.cacheKey); } catch(_) {}
         }
       }
 
-      // ===== DOWNSAMPLING PARA PERFORMANCE DO GRÁFICO =====
-      function downsampleData(data, maxPoints) {
-        if (!data || data.length <= maxPoints) return data;
-        
-        // Algoritmo LTTB simplificado para manter picos importantes
-        const result = [];
-        const step = Math.floor(data.length / maxPoints);
-        
-        for (let i = 0; i < data.length; i += step) {
-          // Pega o ponto com maior valor no intervalo para não perder picos
-          let maxIdx = i;
-          let maxVal = data[i].value;
-          for (let j = i; j < Math.min(i + step, data.length); j++) {
-            if (data[j].value > maxVal) {
-              maxVal = data[j].value;
-              maxIdx = j;
-            }
-          }
-          result.push(data[maxIdx]);
-        }
-        
-        // Garante que o último ponto sempre esteja presente
-        if (result[result.length - 1] !== data[data.length - 1]) {
-          result.push(data[data.length - 1]);
-        }
-        
-        return result;
+      function hasValidCache() {
+        const currency = els.currency?.value || 'USD';
+        const days = parseInt(els.days?.value) || 1825;
+        return !!getCache(currency, days);
       }
 
-      // ===== SALVAR/CARREGAR PARÂMETROS =====
+      // ===== PARÂMETROS =====
       function saveParams() {
-        const params = {
+        if (!els.amount) return;
+        const p = {
           amount: parseFloat(els.amount.value) || 100,
           currency: els.currency.value,
           frequency: els.frequency.value,
-          startDate: els.startDate.value,
-          endDate: els.endDate.value,
-          lastUpdate: Date.now()
+          days: parseInt(els.days.value),
+          t: Date.now()
         };
-        localStorage.setItem(CONFIG.storageKey, JSON.stringify(params));
+        localStorage.setItem(CONFIG.storageKey, JSON.stringify(p));
       }
 
-      function loadSavedParams() {
+      function loadParams() {
         try {
-          const saved = localStorage.getItem(CONFIG.storageKey);
-          if (!saved) return false;
-          
-          const params = JSON.parse(saved);
-          // Valida se os dados não estão muito antigos (> 30 dias)
-          if (params.lastUpdate && Date.now() - params.lastUpdate > 30 * 24 * 60 * 60 * 1000) {
-            return false;
-          }
-          
-          if (params.amount) els.amount.value = params.amount;
-          if (params.currency) els.currency.value = params.currency;
-          if (params.frequency) els.frequency.value = params.frequency;
-          if (params.startDate) els.startDate.value = params.startDate;
-          if (params.endDate) els.endDate.value = params.endDate;
-          return true;
-        } catch (e) {
-          console.warn('⚠️ Erro ao carregar parâmetros:', e);
-          return false;
+          const raw = localStorage.getItem(CONFIG.storageKey);
+          if (!raw) return;
+          const p = JSON.parse(raw);
+          if (p.t && Date.now() - p.t > 30*24*60*60*1000) return; // 30 dias
+          if (els.amount && p.amount) els.amount.value = p.amount;
+          if (els.currency && p.currency) els.currency.value = p.currency;
+          if (els.frequency && p.frequency) els.frequency.value = p.frequency;
+          if (els.days && p.days) els.days.value = p.days;
+        } catch(e) {}
+      }
+
+      // ===== UTILITÁRIOS =====
+      function fmtMoney(v, c) {
+        if (!v && v!==0) return c==='BRL'?'R$ 0':'$0';
+        return new Intl.NumberFormat(c==='BRL'?'pt-BR':'en-US',{
+          style:'currency',currency:c,maximumFractionDigits:0
+        }).format(v);
+      }
+      function fmtBTC(v) {
+        if (!v) return '0 sats';
+        return v>=1 ? v.toFixed(6)+' BTC' : Math.round(v*1e8)+' sats';
+      }
+      function fmtPct(v) {
+        return (v>=0?'+':'')+Math.round(v)+'%';
+      }
+      function showError(m) {
+        if (els.error) {
+          els.error.textContent = m;
+          els.error.classList.add('active');
+          setTimeout(()=>els.error.classList.remove('active'), 6000);
         }
       }
 
-      // ===== MOSTRAR/ESCONDER MENSAGENS =====
-      function showError(msg) {
-        els.error.textContent = msg;
-        els.error.classList.add('active');
-        setTimeout(() => els.error.classList.remove('active'), 8000);
-      }
-
-      function hideError() {
-        els.error.classList.remove('active');
-      }
-
-      // ===== INICIALIZAÇÃO =====
-      function init() {
-        // Datas padrão: 5 anos atrás até hoje
-        const today = new Date();
-        const fiveYearsAgo = new Date();
-        fiveYearsAgo.setFullYear(today.getFullYear() - 5);
+      // ===== CÁLCULO OTIMIZADO: ITERA SOBRE PREÇOS, NÃO DATAS =====
+      function calculateDCA(prices, amount, frequency, currency) {
+        const stepMap = { daily: 1, weekly: 7, biweekly: 14, monthly: 30 };
+        const step = stepMap[frequency] || 7;
         
-        els.startDate.value = formatDateInput(fiveYearsAgo);
-        els.endDate.value = formatDateInput(today);
-
-        // Carrega parâmetros salvos (se válidos)
-        loadSavedParams();
-
-        // Event listeners
-        els.btnCalculate.addEventListener('click', () => handleCalculate(false));
+        let invested = 0, btc = 0, history = [];
         
-        // Salva parâmetros ao mudar qualquer campo
-        [els.amount, els.currency, els.frequency, els.startDate, els.endDate]
-          .forEach(el => el.addEventListener('change', saveParams));
-
-        // Calcula automaticamente APENAS se tiver cache válido (não bloqueia UI)
-        const hasValidParams = loadSavedParams();
-        if (hasValidParams) {
-          // Delay pequeno para não competir com renderização inicial da página
-          setTimeout(() => {
-            const currency = els.currency.value;
-            const from = Math.floor(new Date(els.startDate.value).getTime() / 1000);
-            const to = Math.floor(new Date(els.endDate.value).getTime() / 1000);
-            
-            // Só calcula se já tiver dados em cache (carregamento instantâneo)
-            if (getCachedPrices(currency, from, to)) {
-              handleCalculate(true); // skipIfCached = true
-            }
-          }, 300);
+        // 🔥 Itera direto no array de preços com step (não while+toISOString)
+        for (let i = 0; i < prices.length; i += step) {
+          const p = prices[i];
+          if (!p[1] || p[1] <= 0) continue;
+          
+          invested += amount;
+          btc += amount / p[1];
+          const value = btc * p[1];
+          
+          history.push({
+            t: p[0],
+            value,
+            invested,
+            price: p[1]
+          });
         }
+        
+        const last = history[history.length-1] || { value:0, price:0 };
+        const avg = btc > 0 ? invested / btc : 0;
+        const roi = invested > 0 ? ((last.value - invested) / invested) * 100 : 0;
+        
+        return { history, invested, btc, currentValue: last.value, currentPrice: last.price, avgPrice: avg, roi };
       }
 
-      // ===== FUNÇÃO PRINCIPAL OTIMIZADA =====
-      async function handleCalculate(skipIfCached = false) {
-        hideError();
+      // ===== API: USAR /market_chart?days= (DADOS AGREGADOS) =====
+      async function fetchPrices(currency, days) {
+        // 🔥 Endpoint leve com agregação automática da CoinGecko
+        const url = `${CONFIG.apiBase}/coins/${CONFIG.coinId}/market_chart?vs_currency=${currency.toLowerCase()}&days=${days}&interval=daily`;
         
-        const amount = parseFloat(els.amount.value);
+        const res = await fetch(url, { cache: 'force-cache' });
+        if (!res.ok) {
+          if (res.status === 429) throw new Error('RATE_LIMIT');
+          throw new Error(`API ${res.status}`);
+        }
+        const data = await res.json();
+        return data.prices; // Já vem agregado: ~365 pontos para 1 ano, ~1825 para 5 anos
+      }
+
+      // ===== FUNÇÃO PRINCIPAL =====
+      async function calculate(skipIfCached = false) {
+        if (!getElements()) return;
+        
+        const amount = parseFloat(els.amount.value) || 0;
         const currency = els.currency.value;
         const frequency = els.frequency.value;
-        const startDate = new Date(els.startDate.value);
-        const endDate = new Date(els.endDate.value);
-
-        // Validações
-        if (!amount || amount <= 0) {
-          showError('❌ Insira um valor de aporte válido (maior que zero).');
-          return;
-        }
-        if (startDate >= endDate) {
-          showError('❌ A data de início deve ser anterior à data de fim.');
-          return;
-        }
-        if (endDate > new Date()) {
-          showError('⚠️ Data futura: resultados serão estimados até hoje.');
-          endDate.setTime(Math.min(endDate.getTime(), Date.now()));
-        }
-
-        // UI: mostra loading
+        const days = parseInt(els.days.value) || 1825;
+        
+        if (amount <= 0) { showError('Valor inválido'); return; }
+        
         els.loading.classList.add('active');
         els.results.style.display = 'none';
-        els.btnCalculate.disabled = true;
-
+        els.btn.disabled = true;
+        if (els.error) els.error.classList.remove('active');
+        
         try {
-          const from = Math.floor(startDate.getTime() / 1000);
-          const to = Math.floor(endDate.getTime() / 1000);
-          
-          // Tenta usar cache primeiro
-          let prices = getCachedPrices(currency, from, to);
-          let fromCache = !!prices;
+          // Tenta cache primeiro
+          let prices = getCache(currency, days);
+          const fromCache = !!prices;
           
           if (!prices) {
-            // Busca na API CoinGecko
-            const vsCurrency = currency.toLowerCase();
-            const url = `${CONFIG.apiBase}/coins/${CONFIG.coinId}/market_chart/range?vs_currency=${vsCurrency}&from=${from}&to=${to}`;
-            
-            const response = await fetch(url, { 
-              cache: 'force-cache', // Dica para browser cachear
-              headers: { 'Accept': 'application/json' }
-            });
-            
-            if (!response.ok) {
-              if (response.status === 429) {
-                throw new Error('RATE_LIMIT');
-              }
-              throw new Error(`API ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            if (!data.prices || !Array.isArray(data.prices)) {
-              throw new Error('Formato de dados inválido da API');
-            }
-            
-            prices = data.prices
-              .filter(p => p[1] > 0) // Remove preços zerados/inválidos
-              .map(([timestamp, price]) => ({
-                date: new Date(timestamp),
-                price: price
-              }));
-            
-            // Salva no cache local
-            setCachedPrices(currency, from, to, prices);
+            prices = await fetchPrices(currency, days);
+            if (!prices || prices.length < 10) throw new Error('Dados insuficientes');
+            setCache(currency, days, prices);
           }
           
-          // Se skipIfCached=true e já tínhamos cache, não recalcula UI (carregamento silencioso)
           if (fromCache && skipIfCached) {
             els.loading.classList.remove('active');
-            els.btnCalculate.disabled = false;
+            els.btn.disabled = false;
             return;
           }
           
-          // Calcula simulação DCA
-          const simulation = calculateDCA(prices, amount, frequency, startDate, endDate);
+          const sim = calculateDCA(prices, amount, frequency, currency);
           
-          // Atualiza interface
-          updateResults(simulation, currency);
-          renderChart(simulation, currency);
+          // 🔥 Atualiza resultados PRIMEIRO (sensação de velocidade)
+          updateResults(sim, currency);
+          els.results.style.display = 'grid';
           
-          // Salva parâmetros atuais
+          // 🔥 Renderiza gráfico COM DELAY (não bloqueia UI)
+          setTimeout(() => {
+            renderChart(sim, currency);
+          }, CONFIG.chartDelay);
+          
           saveParams();
           
-        } catch (error) {
-          console.error('❌ Erro na simulação:', error);
-          
-          if (error.message === 'RATE_LIMIT') {
-            showError('⚠️ Muitos acessos simultâneos. Tente novamente em 1-2 minutos. <br><small>Seus dados anteriores ainda estão salvos no cache.</small>');
-          } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-            showError('🌐 Erro de conexão. Verifique sua internet e tente novamente.');
+        } catch (err) {
+          console.error(err);
+          if (err.message === 'RATE_LIMIT') {
+            showError('⚠️ Aguarde 1-2 min e tente novamente (limite da API)');
+          } else if (err.message.includes('Failed to fetch')) {
+            showError('🌐 Erro de conexão. Verifique sua internet.');
           } else {
-            showError(`⚠️ ${error.message}. Tente ajustar as datas ou moeda.`);
+            showError('⚠️ Erro ao carregar dados. Tente outro período.');
           }
-          
         } finally {
           els.loading.classList.remove('active');
-          els.btnCalculate.disabled = false;
+          els.btn.disabled = false;
         }
       }
 
-      // ===== CÁLCULO DCA =====
-      function calculateDCA(prices, amount, frequency, startDate, endDate) {
-        const freqMap = { daily: 1, weekly: 7, biweekly: 14, monthly: 30 };
-        const intervalDays = freqMap[frequency] || 7;
-        
-        let totalInvested = 0;
-        let totalBtc = 0;
-        const history = [];
-        
-        // Mapa de preços por data para lookup O(1)
-        const priceMap = new Map();
-        prices.forEach(p => {
-          const dateKey = p.date.toISOString().split('T')[0];
-          if (!priceMap.has(dateKey) || p.price < priceMap.get(dateKey)) {
-            priceMap.set(dateKey, p.price); // Pega menor preço do dia se houver múltiplos
-          }
-        });
-        
-        let currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-          const dateKey = currentDate.toISOString().split('T')[0];
-          const price = priceMap.get(dateKey);
-          
-          if (price && price > 0) {
-            const btcBought = amount / price;
-            totalInvested += amount;
-            totalBtc += btcBought;
-            
-            const currentValue = totalBtc * price;
-            const roi = totalInvested > 0 ? ((currentValue - totalInvested) / totalInvested) * 100 : 0;
-            
-            history.push({
-              date: new Date(currentDate),
-              invested: totalInvested,
-              btc: totalBtc,
-              value: currentValue,
-              price: price,
-              roi: roi
-            });
-          }
-          
-          currentDate.setDate(currentDate.getDate() + intervalDays);
-        }
-        
-        // Dados finais
-        const lastEntry = history[history.length - 1] || { value: 0, price: 0, invested: 0, btc: 0 };
-        const avgPrice = totalBtc > 0 ? totalInvested / totalBtc : 0;
-        const roi = totalInvested > 0 ? ((lastEntry.value - totalInvested) / totalInvested) * 100 : 0;
-        
-        return {
-          history,
-          totalInvested,
-          totalBtc,
-          currentValue: lastEntry.value,
-          currentPrice: lastEntry.price,
-          avgPrice,
-          roi
-        };
-      }
-
-      // ===== ATUALIZAÇÃO DA UI =====
       function updateResults(sim, currency) {
-        els.results.style.display = 'grid';
-        
-        els.resInvested.textContent = formatCurrency(sim.totalInvested, currency);
-        els.resBtc.textContent = formatBTC(sim.totalBtc);
-        els.resCurrent.textContent = formatCurrency(sim.currentValue, currency);
-        
-        els.resRoi.textContent = formatPercent(sim.roi);
-        els.resRoi.className = 'value ' + (sim.roi >= 0 ? 'positive' : 'negative');
-        
-        els.resAvgPrice.textContent = formatCurrency(sim.avgPrice, currency);
-        els.resCurrentPrice.textContent = formatCurrency(sim.currentPrice, currency);
+        els.res.invested.textContent = fmtMoney(sim.invested, currency);
+        els.res.btc.textContent = fmtBTC(sim.btc);
+        els.res.current.textContent = fmtMoney(sim.currentValue, currency);
+        els.res.roi.textContent = fmtPct(sim.roi);
+        els.res.roi.className = 'value ' + (sim.roi >= 0 ? 'positive' : 'negative');
+        els.res.avgPrice.textContent = fmtMoney(sim.avgPrice, currency);
+        els.res.currentPrice.textContent = fmtMoney(sim.currentPrice, currency);
       }
 
-      // ===== GRÁFICO OTIMIZADO =====
+      // ===== GRÁFICO ULTRA LEVE =====
       function renderChart(sim, currency) {
-        // Destroi gráfico anterior se existir
+        if (!sim.history || sim.history.length === 0) return;
+        
         if (CONFIG.chart) {
           CONFIG.chart.destroy();
           CONFIG.chart = null;
         }
         
-        if (!sim.history || sim.history.length === 0) return;
+        // 🔥 Downsampling agressivo: 150 pontos máx
+        const data = sim.history;
+        const step = Math.max(1, Math.floor(data.length / CONFIG.maxChartPoints));
+        const chartData = [];
+        for (let i = 0; i < data.length; i += step) {
+          chartData.push(data[i]);
+        }
+        if (chartData[chartData.length-1] !== data[data.length-1]) {
+          chartData.push(data[data.length-1]);
+        }
         
-        // Aplica downsampling para performance
-        const chartData = downsampleData(sim.history, CONFIG.maxChartPoints);
         const labels = chartData.map(h => {
-          const d = h.date;
-          return `${d.toLocaleDateString('pt-BR', { month: 'short' })} ${d.getFullYear()}`;
+          const d = new Date(h.t);
+          return d.toLocaleDateString('pt-BR', { month:'short', year:'2-digit' });
         });
         
+        // 🔥 Escala LINEAR (não log) + animação desligada
         const ctx = els.chartCanvas.getContext('2d');
         CONFIG.chart = new Chart(ctx, {
           type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: 'Valor do Portfólio',
-                data: chartData.map(h => h.value),
-                borderColor: '#f7931a',
-                backgroundColor: 'rgba(247, 147, 26, 0.15)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.2,
-                pointRadius: 0,
-                pointHoverRadius: 4,
-                yAxisID: 'y'
-              },
-              {
-                label: 'Total Investido',
-                data: chartData.map(h => h.invested),
-                borderColor: '#666',
-                borderDash: [6, 4],
-                borderWidth: 1.5,
-                fill: false,
-                tension: 0.2,
-                pointRadius: 0,
-                yAxisID: 'y'
-              }
-            ]
+           {
+            labels,
+            datasets: [{
+              label: 'Portfólio',
+              data: chartData.map(h => h.value),
+              borderColor: '#f7931a',
+              backgroundColor: 'rgba(247,147,26,0.1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.15,
+              pointRadius: 0,
+              pointHoverRadius: 3
+            }, {
+              label: 'Investido',
+              data: chartData.map(h => h.invested),
+              borderColor: '#555',
+              borderDash: [4,3],
+              borderWidth: 1,
+              fill: false,
+              tension: 0.15,
+              pointRadius: 0
+            }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            // 🚀 PERFORMANCE: desativa animações pesadas
-            animation: { duration: 0 },
-            interaction: {
-              mode: 'index',
-              intersect: false,
-              axis: 'x'
-            },
+            animation: { duration: 0 }, // 🔥 Sem animação = mais rápido
+            interaction: { mode: 'index', intersect: false },
             scales: {
               y: {
-                type: 'logarithmic',
-                beginAtZero: false,
+                type: 'linear', // 🔥 Linear em vez de log
                 grid: { color: '#2a2a3a', lineWidth: 0.5 },
                 ticks: {
-                  color: '#aaa',
-                  font: { size: 10 },
-                  callback: function(value) {
-                    return formatCurrency(value, currency);
-                  },
-                  maxTicksLimit: 6
-                },
-                title: {
-                  display: true,
-                  text: `Valor (${currency})`,
-                  color: '#666',
-                  font: { size: 11 }
+                  color: '#999',
+                  font: { size: 9 },
+                  callback: v => fmtMoney(v, currency),
+                  maxTicksLimit: 5
                 }
               },
               x: {
-                grid: { color: '#2a2a3a', display: false },
-                ticks: { 
-                  color: '#aaa',
-                  font: { size: 10 },
-                  maxRotation: 0,
-                  autoSkip: true,
-                  maxTicksLimit: 8
+                grid: { display: false },
+                ticks: {
+                  color: '#999',
+                  font: { size: 9 },
+                  maxTicksLimit: 6,
+                  maxRotation: 0
                 }
               }
             },
@@ -813,28 +671,17 @@
               legend: {
                 display: true,
                 position: 'top',
-                labels: { 
-                  color: '#ccc', 
-                  font: { size: 11 },
-                  padding: 15,
-                  usePointStyle: true
-                }
+                labels: { color: '#bbb', font: { size: 10 }, padding: 10, usePointStyle: true }
               },
               tooltip: {
-                enabled: true,
-                backgroundColor: 'rgba(26, 26, 36, 0.95)',
+                backgroundColor: '#1a1a24',
                 titleColor: '#fff',
                 bodyColor: '#ccc',
-                borderColor: '#3a3a52',
+                borderColor: '#333',
                 borderWidth: 1,
-                padding: 12,
-                displayColors: true,
+                padding: 8,
                 callbacks: {
-                  label: function(context) {
-                    const label = context.dataset.label || '';
-                    const value = formatCurrency(context.parsed.y, currency);
-                    return `${label}: ${value}`;
-                  }
+                  label: ctx => `${ctx.dataset.label}: ${fmtMoney(ctx.parsed.y, currency)}`
                 }
               }
             }
@@ -842,25 +689,21 @@
         });
       }
 
-      // ===== INICIALIZAÇÃO SEGURA =====
-      function safeInit() {
-        try {
-          // Verifica se elementos existem antes de adicionar listeners
-          if (!els.btnCalculate) {
-            console.warn('⚠️ Elementos do Simulador HODL não encontrados na página');
-            return;
-          }
-          init();
-        } catch (e) {
-          console.error('❌ Erro crítico ao inicializar Simulador HODL:', e);
+      // ===== EXPORT PARA INTEGRAÇÃO =====
+      // Chame window.clubeDcaHodl.refresh() se precisar recalcular externamente
+      window.clubeDcaHodl = {
+        calculate: () => calculate(false),
+        refresh: () => {
+          if (CONFIG.initialized) calculate(false);
+          else initLazy();
         }
-      }
+      };
 
-      // Inicia quando DOM estiver pronto
+      // Inicialização segura
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', safeInit);
+        document.addEventListener('DOMContentLoaded', initLazy);
       } else {
-        safeInit();
+        initLazy();
       }
 
     })();
