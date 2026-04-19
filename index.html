@@ -508,7 +508,7 @@
 
         /* Streaming Page Styles */
         .streaming-container {
-            max-width: 900px;
+            max-width: 1000px;
         }
 
         .streaming-banner {
@@ -556,7 +556,7 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-top: 30px;
         }
@@ -589,215 +589,6 @@
 
         .service-desc {
             font-size: 13px;
-            color: #8892b0;
-        }
-
-        /* Carteira 2030 Styles */
-        .portfolio-header {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .portfolio-card {
-            background: linear-gradient(135deg, #1a1f3a 0%, #0f1429 100%);
-            border: 1px solid #2a3152;
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-        }
-
-        .portfolio-card.orange { border-top: 4px solid #f7931a; }
-        .portfolio-card.green { border-top: 4px solid #00d4aa; }
-        .portfolio-card.purple { border-top: 4px solid #9b59b6; }
-
-        .portfolio-value {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .portfolio-card.orange .portfolio-value { color: #f7931a; }
-        .portfolio-card.green .portfolio-value { color: #00d4aa; }
-        .portfolio-card.purple .portfolio-value { color: #9b59b6; }
-
-        .portfolio-label {
-            font-size: 14px;
-            color: #8892b0;
-            text-transform: uppercase;
-        }
-
-        .megatrend-section {
-            background: linear-gradient(135deg, #1a1f3a 0%, #0f1429 100%);
-            border: 1px solid #2a3152;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .megatrend-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .megatrend-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .megatrend-percent {
-            color: #f7931a;
-            font-weight: 700;
-        }
-
-        .asset-card {
-            background: rgba(247, 147, 26, 0.05);
-            border: 1px solid #2a3152;
-            border-left: 3px solid #f7931a;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: all 0.3s;
-        }
-
-        .asset-card:hover {
-            border-color: #f7931a;
-            transform: translateX(5px);
-        }
-
-        .asset-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .asset-ticker {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .asset-multiplier {
-            background: rgba(0, 212, 170, 0.1);
-            color: #00d4aa;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .asset-name {
-            font-size: 14px;
-            color: #8892b0;
-            margin-bottom: 12px;
-        }
-
-        .asset-description {
-            font-size: 13px;
-            color: #8892b0;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .asset-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s;
-        }
-
-        .btn-quantity {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            color: #fff;
-        }
-
-        .btn-info {
-            background: rgba(247, 147, 26, 0.1);
-            color: #f7931a;
-            border: 1px solid #f7931a;
-        }
-
-        .btn-clear {
-            background: rgba(255, 255, 255, 0.05);
-            color: #8892b0;
-        }
-
-        .simulator-box {
-            background: linear-gradient(135deg, #00d4aa 0%, #00ffcc 100%);
-            border-radius: 12px;
-            padding: 30px;
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .simulator-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0a0e27;
-            margin-bottom: 20px;
-        }
-
-        .simulator-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .simulator-input {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .simulator-input label {
-            display: block;
-            font-size: 12px;
-            color: #0a0e27;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .simulator-input input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #00d4aa;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 700;
-            color: #0a0e27;
-        }
-
-        .simulator-result {
-            background: rgba(10, 14, 39, 0.9);
-            padding: 25px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .simulator-result-value {
-            font-size: 42px;
-            font-weight: 700;
-            color: #00d4aa;
-            margin-bottom: 10px;
-        }
-
-        .simulator-result-details {
-            font-size: 14px;
             color: #8892b0;
         }
 
@@ -997,15 +788,21 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" onclick="showPage('carteira2030', this)">
-                        <span class="nav-icon"><i class="fas fa-star"></i></span>
+                    <a class="nav-link" onclick="window.open('https://bitcoinhodler.io/', '_blank')">
+                        <span class="nav-icon"><i class="fab fa-bitcoin"></i></span>
+                        <span class="nav-text">Bitcoin HODLer</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="window.open('https://marcoscleber10.github.io/scalp3/', '_blank')">
+                        <span class="nav-icon"><i class="fas fa-wallet"></i></span>
                         <span class="nav-text">Carteira 2030</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" onclick="window.open('https://bitcoinhodler.io/', '_blank')">
-                        <span class="nav-icon"><i class="fab fa-bitcoin"></i></span>
-                        <span class="nav-text">Bitcoin HODLer</span>
+                    <a class="nav-link" onclick="window.open('https://marcoscleber10.github.io/criptomoedas/', '_blank')">
+                        <span class="nav-icon"><i class="fab fa-youtube"></i></span>
+                        <span class="nav-text">Influenciadores no YouTube</span>
                     </a>
                 </li>
             </ul>
@@ -1424,7 +1221,7 @@
                 <div class="streaming-container">
                     <div class="streaming-banner">
                         <h2><i class="fas fa-tv"></i> ATMOS Streaming</h2>
-                        <p>O melhor app do mercado! TV ao vivo, filmes, séries e muito mais</p>
+                        <p>Você já conhece o NOSSO APP? O melhor app do mercado!</p>
                         <a href="https://wa.me/5597991916621?text=Olá! Quero testar o ATMOS Streaming por 6 horas grátis!" class="btn-whatsapp" target="_blank">
                             <i class="fab fa-whatsapp"></i>
                             Pedir Teste Grátis - WhatsApp
@@ -1468,6 +1265,16 @@
                             <div class="service-title">Infantil</div>
                             <div class="service-desc">Conteúdo para crianças</div>
                         </div>
+                        <div class="service-card">
+                            <div class="service-icon" style="color: #e74c3c;"><i class="fas fa-lock"></i></div>
+                            <div class="service-title">Conteúdo Adulto</div>
+                            <div class="service-desc">Canais +18 liberados</div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon" style="color: #27ae60;"><i class="fas fa-futbol"></i></div>
+                            <div class="service-title">Esportes</div>
+                            <div class="service-desc">Jogos sem delay</div>
+                        </div>
                     </div>
 
                     <div class="content-box" style="margin-top: 30px;">
@@ -1478,140 +1285,6 @@
                                 <div style="font-size: 13px; color: #8892b0;">Smart TV • TV Box • PC • Celular • Chromecast</div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARTEIRA 2030 PAGE -->
-            <div id="carteira2030" class="page-section">
-                <div class="header">
-                    <h1 class="header-title"><i class="fas fa-star"></i> Carteira 2030</h1>
-                    <div class="header-actions">
-                        <div class="btc-price-badge">
-                            <i class="fab fa-bitcoin"></i>
-                            BTC R$ 376.454,88
-                        </div>
-                        <button class="btn-primary">
-                            <i class="fas fa-plus"></i>
-                            Registrar DCA
-                        </button>
-                    </div>
-                </div>
-
-                <div class="portfolio-header">
-                    <div class="portfolio-card orange">
-                        <div class="portfolio-value">45</div>
-                        <div class="portfolio-label">Ativos</div>
-                    </div>
-                    <div class="portfolio-card green">
-                        <div class="portfolio-value">5,4x</div>
-                        <div class="portfolio-label">Potencial</div>
-                    </div>
-                    <div class="portfolio-card purple">
-                        <div class="portfolio-value">2030</div>
-                        <div class="portfolio-label">Horizonte</div>
-                    </div>
-                </div>
-
-                <div class="megatrend-section">
-                    <div class="megatrend-header">
-                        <div class="megatrend-title">Distribuição por Megatendência</div>
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px; background: rgba(247, 147, 26, 0.05); border-radius: 6px;">
-                            <span>IA & Chips</span>
-                            <span class="megatrend-percent">25%</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px; background: rgba(0, 212, 170, 0.05); border-radius: 6px;">
-                            <span>Infraestrutura Digital</span>
-                            <span class="megatrend-percent">10%</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px; padding: 8px; background: rgba(155, 89, 182, 0.05); border-radius: 6px;">
-                            <span>Defesa</span>
-                            <span class="megatrend-percent">10%</span>
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn-primary" style="flex: 1; justify-content: center;">
-                            <i class="fas fa-layer-group"></i> 50 Ativos
-                        </button>
-                        <button class="btn-filter" style="flex: 1;">
-                            ETFs (11)
-                        </button>
-                    </div>
-                </div>
-
-                <div style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
-                    <div style="font-weight: 700; color: #fff; margin-bottom: 5px;"><i class="fas fa-bolt"></i> Compre na Quantity</div>
-                    <div style="font-size: 13px; color: rgba(255,255,255,0.9);">Cupom: <strong style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 4px;">YD379NC</strong></div>
-                </div>
-
-                <!-- IA & Chips -->
-                <div class="megatrend-section">
-                    <div class="megatrend-header">
-                        <div class="megatrend-title"><i class="fas fa-microchip" style="color: #f7931a;"></i> IA & Chips</div>
-                        <span class="megatrend-percent">25%</span>
-                    </div>
-
-                    <div class="asset-card">
-                        <div class="asset-header">
-                            <div class="asset-ticker">NVDA</div>
-                            <div class="asset-multiplier">6x</div>
-                        </div>
-                        <div class="asset-name">NVIDIA</div>
-                        <div class="asset-description">Líder absoluta em GPUs para treinamento de IA. Domina 80%+ do mercado.</div>
-                        <div class="asset-buttons">
-                            <button class="btn-small btn-quantity"><i class="fas fa-shopping-cart"></i> Quantity</button>
-                            <button class="btn-small btn-info">Info</button>
-                            <button class="btn-small btn-clear">Clear</button>
-                        </div>
-                    </div>
-
-                    <div class="asset-card">
-                        <div class="asset-header">
-                            <div class="asset-ticker">AMD</div>
-                            <div class="asset-multiplier">5x</div>
-                        </div>
-                        <div class="asset-name">Advanced Micro Devices</div>
-                        <div class="asset-description">Principal concorrente da NVIDIA em GPUs e CPUs.</div>
-                        <div class="asset-buttons">
-                            <button class="btn-small btn-quantity"><i class="fas fa-shopping-cart"></i> Quantity</button>
-                            <button class="btn-small btn-info">Info</button>
-                            <button class="btn-small btn-clear">Clear</button>
-                        </div>
-                    </div>
-
-                    <div class="asset-card">
-                        <div class="asset-header">
-                            <div class="asset-ticker">MSFT</div>
-                            <div class="asset-multiplier">3x</div>
-                        </div>
-                        <div class="asset-name">Microsoft</div>
-                        <div class="asset-description">Copilot, Azure OpenAI e Google Cloud. Domina nuvem + produtividade.</div>
-                        <div class="asset-buttons">
-                            <button class="btn-small btn-quantity"><i class="fas fa-shopping-cart"></i> Quantity</button>
-                            <button class="btn-small btn-info">Info</button>
-                            <button class="btn-small btn-clear">Clear</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Simulador -->
-                <div class="simulator-box">
-                    <div class="simulator-title"><i class="fas fa-calculator"></i> Simular Crescimento → 2030</div>
-                    <div class="simulator-inputs">
-                        <div class="simulator-input">
-                            <label>Aporte Mensal (R$)</label>
-                            <input type="number" id="aporteMensal" value="500">
-                        </div>
-                        <div class="simulator-input">
-                            <label>Retorno Esperado (%/ano)</label>
-                            <input type="number" id="retornoAnual" value="150">
-                        </div>
-                    </div>
-                    <div class="simulator-result">
-                        <div class="simulator-result-value">R$ 657.390</div>
-                        <div class="simulator-result-details">Projeção 2026 → 2030<br>Total investido: R$ 30.000 | Lucro: R$ 627.390</div>
                     </div>
                 </div>
             </div>
